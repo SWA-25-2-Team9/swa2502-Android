@@ -1,4 +1,4 @@
-package com.example.swa2502.ui.theme
+package com.example.swa2502.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

@@ -1,6 +1,5 @@
-package com.example.swa2502.ui.theme
+package com.example.swa2502.presentation.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
