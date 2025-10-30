@@ -1,4 +1,4 @@
-package com.example.swa2502.ui.theme
+package com.example.swa2502.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
