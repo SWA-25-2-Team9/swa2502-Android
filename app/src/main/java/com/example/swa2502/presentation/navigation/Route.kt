@@ -15,12 +15,14 @@ sealed class Route(val route: String) {
     object OrderMenu: Route(route = "orderMenu")
     object MenuOption: Route(route = "menuOption")
     object ShoppingCart: Route("shoppingCart")
+
+    // 결제 관련
     object Pay: Route(route = "pay")
     object PayResult: Route(route = "payResult")
 
     // 혼잡도 조회
     object RestaurantQueue: Route(route = "restaurantQueue")
-    object RestaurantQueueDetails: Route(route = "restaurantQueueDetails")
+    object RestaurantQueueDetail: Route(route = "restaurantQueueDetail")
 
     // 마이페이지
     object MyPage: Route(route = "myPage")
