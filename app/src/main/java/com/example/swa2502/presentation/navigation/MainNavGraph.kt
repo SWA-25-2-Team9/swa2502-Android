@@ -29,54 +29,78 @@ fun MainNavGraph(
     ){
         /* 로그인, 회원가입 */
         composable(route = Route.Login.route){
-            LoginScreen()
+            LoginScreen(
+                modifier = modifier
+            )
         }
         composable(route = Route.SighUp.route){
-            SignUpScreen()
+            SignUpScreen(
+                modifier = modifier
+            )
         }
         /* 관리자 */
         composable(route = Route.ManageQueue.route){
-            ManageQueueScreen()
+            ManageQueueScreen(
+                modifier = modifier
+            )
         }
 
         /* 사용자 */
         composable(route = Route.ShopOverview.route){
-            ShopOverviewScreen()
+            ShopOverviewScreen(
+                modifier = modifier
+            )
         }
 
         /* 주문 */
         composable(route = Route.OrderMenu.route){
-            OrderMenuScreen()
+            OrderMenuScreen(
+                modifier = modifier
+            )
         }
 
         composable(route = Route.MenuOption.route){
-            MenuOptionScreen()
+            MenuOptionScreen(
+                modifier = modifier
+            )
         }
 
         composable(route = Route.ShoppingCart.route){
-            ShoppingCartScreen()
+            ShoppingCartScreen(
+                modifier = modifier
+            )
         }
 
         /* 결제 */
         composable(route = Route.Pay.route){
-            PayScreen()
+            PayScreen(
+                modifier = modifier
+            )
         }
 
         composable(route = Route.PayResult.route){
-            PayResultScreen()
+            PayResultScreen(
+                modifier = modifier
+            )
         }
 
         /* 혼잡도 */
         composable(route = Route.RestaurantQueue.route){
-            RestaurantQueueScreen()
+            RestaurantQueueScreen(
+                modifier = modifier
+            )
         }
         composable(route = Route.RestaurantQueueDetail.route){
-            RestaurantQueueDetailScreen()
+            RestaurantQueueDetailScreen(
+                modifier = modifier
+            )
         }
 
         /* 마이페이지 */
         composable(route = Route.MyPage.route){
-            MyPageScreen()
+            MyPageScreen(
+                modifier = modifier
+            )
         }
     }
 }
