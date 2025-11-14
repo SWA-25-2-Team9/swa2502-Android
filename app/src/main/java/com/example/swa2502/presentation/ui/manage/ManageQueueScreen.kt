@@ -30,7 +30,7 @@ fun ManageQueueScreenContent(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = "Manage Queue Screen")
+        Text(text = "주문 관리(관리자)")
     }
 }
 

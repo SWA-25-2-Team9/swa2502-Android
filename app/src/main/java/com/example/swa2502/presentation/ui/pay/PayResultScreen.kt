@@ -30,7 +30,7 @@ fun PayResultScreenContent(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = "Pay Result Screen")
+        Text(text = "결제 결과")
     }
 }
 

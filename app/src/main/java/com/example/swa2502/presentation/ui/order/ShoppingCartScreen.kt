@@ -30,7 +30,7 @@ fun ShoppingCartScreenContent(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = "Shopping Cart Screen")
+        Text(text = "장바구니")
     }
 }
 

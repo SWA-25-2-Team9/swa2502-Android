@@ -30,7 +30,7 @@ fun MenuOptionScreenContent(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = "Menu Option Screen")
+        Text(text = "메뉴 옵션")
     }
 }
 

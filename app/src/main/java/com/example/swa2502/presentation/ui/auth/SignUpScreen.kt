@@ -30,7 +30,7 @@ fun SignUpScreenContent(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = "Sign Up Screen")
+        Text(text = "회원가입")
     }
 }
 

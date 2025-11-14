@@ -30,7 +30,7 @@ fun RestaurantQueueDetailScreenContent(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = "Restaurant Queue Detail Screen")
+        Text(text = "혼잡도 세부정보")
     }
 }
 

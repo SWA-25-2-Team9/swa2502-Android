@@ -30,7 +30,7 @@ fun OrderMenuScreenContent(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = "Order Menu Screen")
+        Text(text = "메뉴 목록")
     }
 }
 

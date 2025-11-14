@@ -30,7 +30,7 @@ fun MyOrderScreenContent(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = "My Order Screen")
+        Text(text = "주문 조회")
     }
 }
 

@@ -30,7 +30,7 @@ fun MyPageScreenContent(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = "My Page Screen")
+        Text(text = "마이페이지")
     }
 }
 

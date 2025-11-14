@@ -30,7 +30,7 @@ fun LoginScreenContent(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = "Login Screen")
+        Text(text = "로그인")
     }
 }
 

@@ -30,7 +30,7 @@ fun ShopOverviewScreenContent(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = "Shop Overview Screen")
+        Text(text = "사용자 메인")
     }
 }
 
