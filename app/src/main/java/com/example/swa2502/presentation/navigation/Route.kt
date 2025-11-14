@@ -15,6 +15,7 @@ sealed class Route(val route: String) {
     object OrderMenu: Route(route = "orderMenu")
     object MenuOption: Route(route = "menuOption")
     object ShoppingCart: Route("shoppingCart")
+    object MyOrder: Route("myOrder")
 
     // 결제 관련
     object Pay: Route(route = "pay")

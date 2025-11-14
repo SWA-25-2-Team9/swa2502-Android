@@ -10,6 +10,7 @@ import com.example.swa2502.presentation.ui.auth.SignUpScreen
 import com.example.swa2502.presentation.ui.manage.ManageQueueScreen
 import com.example.swa2502.presentation.ui.mypage.MyPageScreen
 import com.example.swa2502.presentation.ui.order.MenuOptionScreen
+import com.example.swa2502.presentation.ui.order.MyOrderScreen
 import com.example.swa2502.presentation.ui.order.OrderMenuScreen
 import com.example.swa2502.presentation.ui.order.ShoppingCartScreen
 import com.example.swa2502.presentation.ui.pay.PayResultScreen
@@ -67,6 +68,12 @@ fun MainNavGraph(
 
         composable(route = Route.ShoppingCart.route){
             ShoppingCartScreen(
+                modifier = modifier
+            )
+        }
+
+        composable(route = Route.MyOrder.route){
+            MyOrderScreen(
                 modifier = modifier
             )
         }
