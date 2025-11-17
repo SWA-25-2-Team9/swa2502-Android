@@ -56,7 +56,16 @@ fun MainNavGraph(
         /* 주문 */
         composable(route = Route.OrderMenu.route){
             OrderMenuScreen(
-                modifier = modifier
+                modifier = modifier,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onCartClick = {
+                    navController.navigate(Route.ShoppingCart.route)
+                },
+                onNavigateToMenuOption = { menuItem ->
+                    navController.navigate(Route.MenuOption.route)
+                }
             )
         }
 
