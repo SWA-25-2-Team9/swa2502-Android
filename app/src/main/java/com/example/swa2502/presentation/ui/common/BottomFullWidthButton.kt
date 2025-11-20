@@ -1,4 +1,4 @@
-package com.example.swa2502.presentation.ui.auth.component
+package com.example.swa2502.presentation.ui.common
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
