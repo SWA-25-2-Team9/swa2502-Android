@@ -196,8 +196,6 @@ private fun MenuOptionScreenContentPreview() {
     )
 }
 
-// (OptionGroupSection 및 기타 UI 보조 함수들은 이 파일 하단이나 별도 파일에 존재해야 합니다.
-//  요청에 따라 OptionGroupSection의 세부 구현은 생략하고 구조만 맞춥니다.)
 @Composable
 fun OptionGroupSection(
     optionGroup: OptionGroup,
@@ -209,7 +207,7 @@ fun OptionGroupSection(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp) // LazyColumn의 8dp 패딩에 맞춰 Card 내부 간격 조절
+            .padding(vertical = 4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
