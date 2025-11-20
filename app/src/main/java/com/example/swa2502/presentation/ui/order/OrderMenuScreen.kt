@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,7 +35,7 @@ fun OrderMenuScreen(
     val viewModel: OrderMenuViewModel = hiltViewModel()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
-    // 🚨 OrderMenuScreenContent 호출 시 누락된 모든 인수를 전달합니다.
+    // OrderMenuScreenContent 호출 시 누락된 모든 인수를 전달합니다.
     OrderMenuScreenContent(
         modifier = Modifier.fillMaxSize(),
         uiState = uiState.value,
@@ -67,9 +69,9 @@ fun OrderMenuScreenContent(
             ) {
                 // 뒤로가기 아이콘
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow_back_orange), // @drawable/ic_arrow_back_orange
+                    painter = painterResource(id = R.drawable.ic_arrow_back_orange),
                     contentDescription = "뒤로가기",
-                    tint = Color(0xFFFF5722),
+                    tint = Color(0xFFFF9800),
                     modifier = Modifier
                         .size(24.dp)
                         .clickable(onClick = onBackClick)
@@ -85,9 +87,9 @@ fun OrderMenuScreenContent(
 
                 // 카트 아이콘 (icon_cart)
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_cart_orange), // @drawable/ic_cart_orange
+                    imageVector = Icons.Filled.ShoppingCart,
                     contentDescription = "장바구니",
-                    tint = Color(0xFFFF5722),
+                    tint = Color(0xFFFF9800),
                     modifier = Modifier
                         .size(24.dp)
                         .clickable(onClick = onCartClick)
@@ -99,7 +101,7 @@ fun OrderMenuScreenContent(
             Button(
                 onClick = onCheckoutClick,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)), // #FF9800
-                shape = RoundedCornerShape(0.dp), // 모서리 둥글기 제거
+                shape = RoundedCornerShape(0.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)

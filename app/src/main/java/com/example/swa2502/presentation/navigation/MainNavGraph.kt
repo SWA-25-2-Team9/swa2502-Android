@@ -71,7 +71,10 @@ fun MainNavGraph(
 
         composable(route = Route.MenuOption.route){
             MenuOptionScreen(
-                modifier = modifier
+                modifier = modifier,
+                onBackClick = { navController.popBackStack() }, // 뒤로가기
+                onAddToCartClick = { navController.navigate(Route.ShoppingCart.route) }, // 카트로 이동
+                onCartClick = { navController.navigate(Route.ShoppingCart.route) }
             )
         }
 
