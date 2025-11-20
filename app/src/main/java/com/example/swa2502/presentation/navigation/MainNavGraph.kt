@@ -31,7 +31,24 @@ fun MainNavGraph(
         /* 로그인, 회원가입 */
         composable(route = Route.Login.route){
             LoginScreen(
-                modifier = modifier
+                modifier = modifier,
+                onNavigateToUserMain = {
+                    navController.navigate(Route.ShopOverview.route){
+                        popUpTo(Route.Login.route){
+                            inclusive = true
+                        }
+                    }
+                },
+                onNavigateToAdminMain = {
+                    navController.navigate(Route.ManageQueue.route){
+                        popUpTo(Route.Login.route){
+                            inclusive = true
+                        }
+                    }
+                },
+                onNavigateToSignUp = {
+                    navController.navigate(Route.SighUp.route)
+                }
             )
         }
         composable(route = Route.SighUp.route){
