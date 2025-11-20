@@ -1,6 +1,5 @@
-package com.example.swa2502.presentation.ui.auth.component
+package com.example.swa2502.presentation.ui.common
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text

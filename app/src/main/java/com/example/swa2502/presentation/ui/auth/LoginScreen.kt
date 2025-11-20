@@ -30,8 +30,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.swa2502.R
-import com.example.swa2502.presentation.ui.auth.component.BottomFullWidthButton
-import com.example.swa2502.presentation.ui.auth.component.CustomTextField
+import com.example.swa2502.presentation.ui.common.BottomFullWidthButton
+import com.example.swa2502.presentation.ui.common.CustomTextField
 import com.example.swa2502.presentation.viewmodel.auth.LoginUiState
 import com.example.swa2502.presentation.viewmodel.auth.LoginViewModel
 
