@@ -37,7 +37,7 @@ fun ManageQueueItem(
     orderId: String,
     orderState: String,
     orderTime: String,
-    orderNumber: Int,
+    orderNumber: String,
     menus: List<String>,
     onStateChange: () -> Unit,
 ) {
@@ -154,7 +154,7 @@ private fun ManageQueueItemPreview() {
             orderId = "abc123",
             orderState = "조리 완료",
             orderTime = "12:30",
-            orderNumber = 123,
+            orderNumber = "123",
             menus = listOf("메뉴1", "메뉴2", "메뉴3"),
         ) {
 
@@ -164,7 +164,7 @@ private fun ManageQueueItemPreview() {
             orderId = "abc321",
             orderState = "조리중",
             orderTime = "12:32",
-            orderNumber = 321,
+            orderNumber = "321",
             menus = listOf("메뉴1", "메뉴2", "메뉴3"),
         ) {
 
