@@ -1,5 +1,3 @@
-// MyOrderViewModel.kt
-
 package com.example.swa2502.presentation.viewmodel.order
 
 import androidx.lifecycle.ViewModel
