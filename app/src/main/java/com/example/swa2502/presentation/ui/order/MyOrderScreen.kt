@@ -1,5 +1,3 @@
-// MyOrderScreen.kt 파일
-
 package com.example.swa2502.presentation.ui.order
 
 import androidx.compose.foundation.background
