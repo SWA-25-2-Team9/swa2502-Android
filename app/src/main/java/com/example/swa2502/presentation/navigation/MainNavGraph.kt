@@ -88,7 +88,9 @@ fun MainNavGraph(
 
         composable(route = Route.MyOrder.route){
             MyOrderScreen(
-                modifier = modifier
+                modifier = modifier,
+                onBackClick = { navController.popBackStack() },
+                onCartClick = { navController.navigate(Route.ShoppingCart.route) }
             )
         }
 
