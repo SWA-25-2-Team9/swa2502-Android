@@ -2,8 +2,9 @@ package com.example.swa2502.domain.usecase.manage
 
 import com.example.swa2502.domain.model.Order
 import com.example.swa2502.domain.repository.ManageRepository
+import javax.inject.Inject
 
-class GetOrdersUseCase(
+class GetOrdersUseCase @Inject constructor(
     private val repository: ManageRepository
 ) {
     suspend fun getAllOrders(): List<Order> =

@@ -44,6 +44,7 @@ fun ManageQueueScreen(modifier: Modifier = Modifier) {
     ManageQueueScreenContent(
         modifier = Modifier,
         uiState = uiState.value,
+        onTabSelected = { tab -> viewModel.selectTab(tab) }
     )
 }
 
@@ -52,6 +53,7 @@ fun ManageQueueScreen(modifier: Modifier = Modifier) {
 fun ManageQueueScreenContent(
     modifier: Modifier = Modifier,
     uiState: ManageQueueUiState,
+    onTabSelected: (String) -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -96,11 +98,11 @@ fun ManageQueueScreenContent(
                         modifier = Modifier
                             .align(Alignment.Center)
                             .clickable(onClick = {
-                                // TODO: 메뉴 선택시 로직 구현
+                                onTabSelected("전체 주문")
                             }),
                         text = "전체 주문",
                         style = TextStyle(
-                            color = Color(0xFF777777),
+                            color = if (uiState.selectedTab == "전체 주문") Color(0xFFFF874A) else Color(0xFF777777),
                             fontSize = 16.sp,
                             fontFamily = FontFamily(Font(R.font.pretendard_bold))
                         )
@@ -113,11 +115,11 @@ fun ManageQueueScreenContent(
                         modifier = Modifier
                             .align(Alignment.Center)
                             .clickable(onClick = {
-                                // TODO: 메뉴 선택시 로직 구현
+                                onTabSelected("조리중")
                             }),
                         text = "조리중",
                         style = TextStyle(
-                            color = Color(0xFF777777),
+                            color = if (uiState.selectedTab == "조리중") Color(0xFFFF874A) else Color(0xFF777777),
                             fontSize = 16.sp,
                             fontFamily = FontFamily(Font(R.font.pretendard_bold))
                         )
@@ -130,11 +132,11 @@ fun ManageQueueScreenContent(
                         modifier = Modifier
                             .align(Alignment.Center)
                             .clickable(onClick = {
-                                // TODO: 메뉴 선택시 로직 구현
+                                onTabSelected("수령 대기")
                             }),
                         text = "수령 대기",
                         style = TextStyle(
-                            color = Color(0xFF777777),
+                            color = if (uiState.selectedTab == "수령 대기") Color(0xFFFF874A) else Color(0xFF777777),
                             fontSize = 16.sp,
                             fontFamily = FontFamily(Font(R.font.pretendard_bold))
                         )
@@ -198,7 +200,8 @@ private fun ManageQueueScreenContentPreview() {
                         menus = listOf("돈까스"),
                         timeStamp = "12:10"
                     )
-                )
+                ),
+            selectedTab = "전체 주문"
         ),
     )
 }

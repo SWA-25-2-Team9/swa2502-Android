@@ -16,6 +16,7 @@ data class ManageQueueUiState(
     // 필요에 따라 상태 관리에 필요한 변수들 추가
     val orderList: List<Order> = emptyList(),
     val errorMessage: String? = null,
+    val selectedTab: String = "전체 주문",
 )
 
 @HiltViewModel
@@ -56,6 +57,16 @@ class ManageQueueViewModel @Inject constructor(
     // 수령 대기중인 주문 불러오기
     fun getPreparedOrders() {
 
+    }
+
+    // 탭 선택 변경
+    fun selectTab(tab: String) {
+        _uiState.value = _uiState.value.copy(selectedTab = tab)
+        when (tab) {
+            "전체 주문" -> getAllOrders()
+            "조리중" -> getOrdersInProgress()
+            "수령 대기" -> getPreparedOrders()
+        }
     }
 }
 
