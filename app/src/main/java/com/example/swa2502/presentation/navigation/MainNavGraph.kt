@@ -73,25 +73,41 @@ fun MainNavGraph(
         /* 주문 */
         composable(route = Route.OrderMenu.route){
             OrderMenuScreen(
-                modifier = modifier
+                modifier = modifier,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onCartClick = {
+                    navController.navigate(Route.ShoppingCart.route)
+                },
+                onNavigateToMenuOption = { menuItem ->
+                    navController.navigate(Route.MenuOption.route)
+                }
             )
         }
 
         composable(route = Route.MenuOption.route){
             MenuOptionScreen(
-                modifier = modifier
+                modifier = modifier,
+                onBackClick = { navController.popBackStack() }, // 뒤로가기
+                onAddToCartClick = { navController.navigate(Route.ShoppingCart.route) }, // 카트로 이동
+                onCartClick = { navController.navigate(Route.ShoppingCart.route) }
             )
         }
 
         composable(route = Route.ShoppingCart.route){
             ShoppingCartScreen(
-                modifier = modifier
+                modifier = modifier,
+                onBackClick =  { navController.popBackStack() },
+                onCheckoutClick = { navController.navigate(Route.Pay.route) }
             )
         }
 
         composable(route = Route.MyOrder.route){
             MyOrderScreen(
-                modifier = modifier
+                modifier = modifier,
+                onBackClick = { navController.popBackStack() },
+                onCartClick = { navController.navigate(Route.ShoppingCart.route) }
             )
         }
 
