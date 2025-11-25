@@ -149,6 +149,8 @@ fun LoginScreenContent(
                     .padding(horizontal = 20.dp)
             ) {
                 // TODO: 로그인 로직 구현
+                onNavigateToUserMain()
+//                onNavigateToAdminMain
             }
 
             BottomFullWidthButton(
