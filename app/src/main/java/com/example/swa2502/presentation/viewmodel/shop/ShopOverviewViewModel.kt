@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 data class ShopOverviewUiState(
     val isLoading: Boolean = false,
-    // 필요에 따라 상태 관리에 필요한 변수들 추가
+    val restaurantList: List<String> = listOf("학생식당", "도서관 식당", "식당3"), // TODO: 이후에 수정
     val errorMessage: String? = null,
 )
 
