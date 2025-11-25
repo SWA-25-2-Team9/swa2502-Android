@@ -1,6 +1,7 @@
 package com.example.swa2502.presentation.viewmodel.shop
 
 import androidx.lifecycle.ViewModel
+import com.example.swa2502.domain.model.ShopOverviewInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,6 +11,7 @@ import javax.inject.Inject
 data class ShopOverviewUiState(
     val isLoading: Boolean = false,
     val restaurantList: List<String> = listOf("학생식당", "도서관 식당", "식당3"), // TODO: 이후에 수정
+    val shopInfoList: List<ShopOverviewInfo> = emptyList(),
     val errorMessage: String? = null,
 )
 
