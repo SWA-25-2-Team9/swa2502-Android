@@ -1,5 +1,6 @@
 package com.example.swa2502.presentation.ui.shop
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -74,7 +75,9 @@ fun ShopOverviewScreenContent(
     val scrollState = rememberScrollState()
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
     ) {
         TopAppBar(
             modifier = Modifier,
@@ -128,13 +131,17 @@ fun ShopOverviewScreenContent(
             }
             
             DropdownMenu(
+                modifier = Modifier
+                    .background(color = Color(0xFFF5F5F5)),
                 expanded = dropdownExpanded,
                 offset = DpOffset(0.dp, 0.dp),
                 onDismissRequest = { dropdownExpanded = false }
             ) {
                 dropdownList.forEachIndexed { index, selectionOption ->
                     DropdownMenuItem(
-                        text = { 
+                        modifier = Modifier
+                            .background(color = Color(0xFFF5F5F5)),
+                        text = {
                             Text(
                                 text = selectionOption,
                                 style = TextStyle(
@@ -146,6 +153,7 @@ fun ShopOverviewScreenContent(
                         onClick = {
                             selectedDropdownMenu = dropdownList[index]
                             dropdownExpanded = false
+                            // TODO: 선택된 식당의 가게들 정보 업데이트
                         }
                     )
                 }
