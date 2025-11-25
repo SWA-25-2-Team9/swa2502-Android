@@ -66,7 +66,10 @@ fun MainNavGraph(
         /* 사용자 */
         composable(route = Route.ShopOverview.route){
             ShopOverviewScreen(
-                modifier = modifier
+                modifier = modifier,
+                onNavigateToOrder = {
+                    navController.navigate(Route.OrderMenu.route)
+                }
             )
         }
 
