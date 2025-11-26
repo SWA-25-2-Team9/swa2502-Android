@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val navBarItems = listOf(
                 BottomNavItem(
-                    label = "자산 조회",
+                    label = "홈",
                     route = Route.ShopOverview.route,
                     icon = R.drawable.ic_bottomnav_home
                 ),
