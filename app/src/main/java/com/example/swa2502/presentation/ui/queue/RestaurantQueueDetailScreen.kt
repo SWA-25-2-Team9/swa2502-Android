@@ -1,6 +1,7 @@
 package com.example.swa2502.presentation.ui.queue
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -18,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -33,13 +36,17 @@ import com.example.swa2502.presentation.viewmodel.queue.RestaurantQueueDetailUiS
 import com.example.swa2502.presentation.viewmodel.queue.RestaurantQueueDetailViewModel
 
 @Composable
-fun RestaurantQueueDetailScreen(modifier: Modifier = Modifier) {
+fun RestaurantQueueDetailScreen(
+    modifier: Modifier = Modifier,
+    onNavigateBack: () -> Unit,
+) {
     val viewModel: RestaurantQueueDetailViewModel = hiltViewModel()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
     RestaurantQueueDetailScreenContent(
         modifier = Modifier,
         uiState = uiState.value,
+        onNavigateBack = onNavigateBack
     )
 }
 
@@ -48,6 +55,7 @@ fun RestaurantQueueDetailScreen(modifier: Modifier = Modifier) {
 fun RestaurantQueueDetailScreenContent(
     modifier: Modifier = Modifier,
     uiState: RestaurantQueueDetailUiState,
+    onNavigateBack: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -56,12 +64,28 @@ fun RestaurantQueueDetailScreenContent(
             .background(color = Color.White)
     ) {
         TopAppBar(
-            modifier = Modifier,
+            modifier = Modifier.fillMaxWidth(),
             title = {
-                Box(modifier = Modifier.fillMaxWidth()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .clickable(
+                                onClick = {
+                                    onNavigateBack()
+                                }
+                            ),
+                        painter = painterResource(R.drawable.ic_back_orange),
+                        tint = Color(0xFFFF874A),
+                        contentDescription = "Back Icon"
+                    )
                     Text(
                         modifier = Modifier.align(Alignment.Center),
-                        text = "식당 혼잡도",
+                        text = "주문 대기열",
                         style = TextStyle(
                             color = Color.Black,
                             fontSize = 18.sp,
@@ -126,5 +150,6 @@ private fun RestaurantQueueDetailScreenContentPreview() {
                 )
             )
         ),
+        onNavigateBack = {}
     )
 }
