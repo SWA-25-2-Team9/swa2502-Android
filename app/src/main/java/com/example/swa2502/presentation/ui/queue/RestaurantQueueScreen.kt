@@ -1,13 +1,34 @@
 package com.example.swa2502.presentation.ui.queue
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.swa2502.R
+import com.example.swa2502.domain.model.RestaurantInfo
+import com.example.swa2502.presentation.ui.queue.component.RestaurantInfoItem
 import com.example.swa2502.presentation.viewmodel.queue.RestaurantQueueUiState
 import com.example.swa2502.presentation.viewmodel.queue.RestaurantQueueViewModel
 
@@ -22,15 +43,57 @@ fun RestaurantQueueScreen(modifier: Modifier = Modifier) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RestaurantQueueScreenContent(
     modifier: Modifier = Modifier,
     uiState: RestaurantQueueUiState,
 ) {
+    val scrollState = rememberScrollState()
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.White)
     ) {
-        Text(text = "혼잡도")
+        TopAppBar(
+            modifier = Modifier,
+            title = {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        modifier = Modifier.align(Alignment.Center),
+                        text = "식당 혼잡도",
+                        style = TextStyle(
+                            color = Color.Black,
+                            fontSize = 18.sp,
+                            fontFamily = FontFamily(Font(R.font.pretendard_semibold))
+                        )
+                    )
+                }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.White
+            )
+        )
+        Spacer(modifier = Modifier.size(20.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp)
+                .verticalScroll(state = scrollState)
+        ) {
+            uiState.restaurantList.forEach { restaurant ->
+                RestaurantInfoItem(
+                    modifier = Modifier,
+                    restaurantId = restaurant.restaurantId,
+                    restaurantState = restaurant.restaurantState,
+                    restaurantName = restaurant.restaurantName,
+                    waitingTime = restaurant.waitingTime,
+                ) {
+                    // TODO: 식당 대기열 상세 화면으로 이동
+                }
+                Spacer(modifier = Modifier.size(20.dp))
+            }
+        }
     }
 }
 
@@ -39,6 +102,27 @@ fun RestaurantQueueScreenContent(
 private fun RestaurantQueueScreenContentPreview() {
     RestaurantQueueScreenContent(
         modifier = Modifier,
-        uiState = RestaurantQueueUiState(),
+        uiState = RestaurantQueueUiState(
+            restaurantList = listOf(
+                RestaurantInfo(
+                    restaurantId = "111",
+                    restaurantState = "여유",
+                    restaurantName = "학생식당",
+                    waitingTime = 5,
+                ),
+                RestaurantInfo(
+                    restaurantId = "222",
+                    restaurantState = "조금 혼잡",
+                    restaurantName = "도서관 식당",
+                    waitingTime = 10,
+                ),
+                RestaurantInfo(
+                    restaurantId = "333",
+                    restaurantState = "혼잡",
+                    restaurantName = "식당3",
+                    waitingTime = 20,
+                ),
+            )
+        ),
     )
 }

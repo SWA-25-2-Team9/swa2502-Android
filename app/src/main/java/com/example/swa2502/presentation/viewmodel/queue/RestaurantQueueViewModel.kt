@@ -1,6 +1,7 @@
 package com.example.swa2502.presentation.viewmodel.queue
 
 import androidx.lifecycle.ViewModel
+import com.example.swa2502.domain.model.RestaurantInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -9,7 +10,7 @@ import javax.inject.Inject
 
 data class RestaurantQueueUiState(
     val isLoading: Boolean = false,
-    // 필요에 따라 상태 관리에 필요한 변수들 추가
+    val restaurantList: List<RestaurantInfo> = emptyList(),
     val errorMessage: String? = null,
 )
 
