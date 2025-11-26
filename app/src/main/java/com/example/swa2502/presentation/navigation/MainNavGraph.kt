@@ -78,7 +78,7 @@ fun MainNavGraph(
             OrderMenuScreen(
                 modifier = modifier,
                 onBackClick = {
-                    navController.popBackStack()
+                    navController.navigateUp()
                 },
                 onCartClick = {
                     navController.navigate(Route.ShoppingCart.route)
@@ -92,7 +92,7 @@ fun MainNavGraph(
         composable(route = Route.MenuOption.route){
             MenuOptionScreen(
                 modifier = modifier,
-                onBackClick = { navController.popBackStack() }, // 뒤로가기
+                onBackClick = { navController.navigateUp() }, // 뒤로가기
                 onAddToCartClick = { navController.navigate(Route.ShoppingCart.route) }, // 카트로 이동
                 onCartClick = { navController.navigate(Route.ShoppingCart.route) }
             )
@@ -101,7 +101,7 @@ fun MainNavGraph(
         composable(route = Route.ShoppingCart.route){
             ShoppingCartScreen(
                 modifier = modifier,
-                onBackClick =  { navController.popBackStack() },
+                onBackClick =  { navController.navigateUp() },
                 onCheckoutClick = { navController.navigate(Route.Pay.route) }
             )
         }
@@ -109,7 +109,7 @@ fun MainNavGraph(
         composable(route = Route.MyOrder.route){
             MyOrderScreen(
                 modifier = modifier,
-                onBackClick = { navController.popBackStack() },
+                onBackClick = { navController.navigateUp() },
                 onCartClick = { navController.navigate(Route.ShoppingCart.route) }
             )
         }
@@ -135,7 +135,10 @@ fun MainNavGraph(
         }
         composable(route = Route.RestaurantQueueDetail.route){
             RestaurantQueueDetailScreen(
-                modifier = modifier
+                modifier = modifier,
+                onNavigateBack = {
+                    navController.navigateUp()
+                }
             )
         }
 
