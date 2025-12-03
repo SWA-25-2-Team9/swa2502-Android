@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -51,7 +52,9 @@ fun LoginScreen(
         onNavigateToUserMain = onNavigateToUserMain,
         onNavigateToAdminMain = onNavigateToAdminMain,
         onNavigateToSignUp = onNavigateToSignUp,
-        onLoginClick = { }, // TODO: viewModel에서 함수 구현
+        onLoginClick = { userId, password ->
+            viewModel.login(userId, password)
+        }
     )
 }
 
@@ -62,10 +65,20 @@ fun LoginScreenContent(
     onNavigateToUserMain: () -> Unit,
     onNavigateToAdminMain: () -> Unit,
     onNavigateToSignUp: () -> Unit,
-    onLoginClick: () -> Unit,
+    onLoginClick: (String, String) -> Unit,
 ) {
     var id by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
+    
+    // 로그인 성공 시 role에 따라 화면 이동
+    LaunchedEffect(uiState.isLoginSuccess) {
+        if (uiState.isLoginSuccess) {
+            when (uiState.userRole) {
+                "ROLE_USER" -> onNavigateToUserMain()
+                "ROLE_ADMIN" -> onNavigateToAdminMain()
+            }
+        }
+    }
 
     Column(
         modifier = modifier
@@ -132,6 +145,19 @@ fun LoginScreenContent(
                     ),
                 visualTransformation = PasswordVisualTransformation()
             )
+            
+            // 에러 메시지 표시
+            if (uiState.errorMessage != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = uiState.errorMessage,
+                    color = Color.Red,
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        fontFamily = FontFamily(Font(R.font.pretendard_medium))
+                    )
+                )
+            }
         }
 
 
@@ -143,14 +169,14 @@ fun LoginScreenContent(
             BottomFullWidthButton(
                 containerColor = Color(0xFFFF874A),
                 contentColor = Color.White,
-                text = "로그인",
+                text = if (uiState.isLoading) "로그인 중..." else "로그인",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
             ) {
-                // TODO: 로그인 로직 구현
-                onNavigateToUserMain()
-//                onNavigateToAdminMain
+                if (!uiState.isLoading && id.isNotBlank() && password.isNotBlank()) {
+                    onLoginClick(id, password)
+                }
             }
 
             BottomFullWidthButton(
@@ -179,7 +205,7 @@ private fun LoginScreenContentPreview() {
         uiState = LoginUiState(),
         onNavigateToUserMain = {},
         onNavigateToAdminMain = {},
-        onNavigateToSignUp= {},
-        onLoginClick = {}
+        onNavigateToSignUp = {},
+        onLoginClick = { _, _ -> }
     )
 }
