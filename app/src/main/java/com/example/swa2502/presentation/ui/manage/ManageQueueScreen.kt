@@ -44,7 +44,8 @@ fun ManageQueueScreen(modifier: Modifier = Modifier) {
     ManageQueueScreenContent(
         modifier = Modifier,
         uiState = uiState.value,
-        onTabSelected = { tab -> viewModel.selectTab(tab) }
+        onTabSelected = { tab -> viewModel.selectTab(tab) },
+        onOrderStatusChange = { orderItemId -> viewModel.updateOrderStatus(orderItemId) }
     )
 }
 
@@ -54,6 +55,7 @@ fun ManageQueueScreenContent(
     modifier: Modifier = Modifier,
     uiState: ManageQueueUiState,
     onTabSelected: (String) -> Unit = {},
+    onOrderStatusChange: (String) -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -161,7 +163,7 @@ fun ManageQueueScreenContent(
                         orderTime = order.timeStamp,
                         menus = order.menus,
                         onStateChange = {
-                            // TODO: 주문 상태 변경 로직 구현
+                            onOrderStatusChange(order.id)
                         }
                     )
                     Spacer(modifier = Modifier.size(20.dp))
@@ -182,21 +184,21 @@ private fun ManageQueueScreenContentPreview() {
                     Order(
                         id = "100",
                         orderNumber = "100",
-                        orderState = "조리 완료",
+                        orderState = "READY",
                         menus = listOf("라면"),
                         timeStamp = "12:00"
                     ),
                     Order(
                         id = "101",
                         orderNumber = "101",
-                        orderState = "조리중",
+                        orderState = "ACCEPTED",
                         menus = listOf("김밥", "떡볶이"),
                         timeStamp = "12:05"
                     ),
                     Order(
                         id = "102",
                         orderNumber = "102",
-                        orderState = "조리중",
+                        orderState = "ACCEPTED",
                         menus = listOf("돈까스"),
                         timeStamp = "12:10"
                     )
