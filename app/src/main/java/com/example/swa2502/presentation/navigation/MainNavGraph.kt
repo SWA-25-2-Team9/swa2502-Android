@@ -117,7 +117,9 @@ fun MainNavGraph(
         /* 결제 */
         composable(route = Route.Pay.route){
             PayScreen(
-                modifier = modifier
+                modifier = modifier,
+                onPayClick = {},
+                onBackClick = {}
             )
         }
 
