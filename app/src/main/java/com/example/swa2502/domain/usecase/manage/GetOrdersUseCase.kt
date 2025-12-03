@@ -1,6 +1,7 @@
 package com.example.swa2502.domain.usecase.manage
 
 import com.example.swa2502.domain.model.Order
+import com.example.swa2502.domain.model.OrderStatus
 import com.example.swa2502.domain.repository.ManageRepository
 import javax.inject.Inject
 
@@ -22,7 +23,7 @@ class GetOrdersUseCase @Inject constructor(
      * @return 조리중인 주문 목록
      */
     suspend fun getOrdersInProgress(shopId: Int): Result<List<Order>> {
-        return repository.getShopOrdersByStatus(shopId, "ACCEPTED")
+        return repository.getShopOrdersByStatus(shopId, OrderStatus.ACCEPTED.name)
     }
 
     /**
@@ -31,6 +32,6 @@ class GetOrdersUseCase @Inject constructor(
      * @return 수령 대기중인 주문 목록
      */
     suspend fun getPreparedOrders(shopId: Int): Result<List<Order>> {
-        return repository.getShopOrdersByStatus(shopId, "READY")
+        return repository.getShopOrdersByStatus(shopId, OrderStatus.READY.name)
     }
 }

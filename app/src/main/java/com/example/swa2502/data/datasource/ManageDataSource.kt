@@ -25,4 +25,13 @@ class ManageDataSource @Inject constructor(
     suspend fun getShopOrdersByStatus(shopId: Int, status: String): List<AdminOrderItemDto> {
         return api.getShopOrdersByStatus(shopId, status)
     }
+    
+    /**
+     * API를 통해 주문 상태를 다음 단계로 변경
+     * @param orderItemId 주문 항목 ID
+     * @return AdminOrderItemDto
+     */
+    suspend fun updateOrderStatusToNext(orderItemId: Int): AdminOrderItemDto {
+        return api.updateOrderStatusToNext(orderItemId)
+    }
 }
