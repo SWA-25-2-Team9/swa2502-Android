@@ -1,4 +1,4 @@
-package com.example.swa2502.presentation.ui.order
+package com.example.swa2502.presentation.ui.order.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +21,11 @@ fun MenuItemRow(
     onClick: (MenuItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // soldout시 클릭 비활성화
+    val clickableModifier = if (!menuItem.isSoldOut) {
+        Modifier.clickable(onClick = { onClick(menuItem) })
+    } else Modifier
+
     Card(
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -47,7 +52,7 @@ fun MenuItemRow(
                 Text(
                     text = "${String.format("%,d", menuItem.price)}원",
                     fontSize = 14.sp,
-                    color = Color(0xFF555555) // #555555
+                    color = Color(0xFF555555)
                 )
                 // 품절 표시 (isSoldOut이 true일 경우)
                 if (menuItem.isSoldOut) {
@@ -61,7 +66,7 @@ fun MenuItemRow(
                 }
             }
 
-            // 메뉴 이미지 (80dp x 80dp 플레이스홀더 대체)
+            // 메뉴 이미지
             Box(
                 modifier = Modifier
                     .size(80.dp)
