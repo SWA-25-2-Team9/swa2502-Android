@@ -33,13 +33,17 @@ import com.example.swa2502.presentation.viewmodel.queue.RestaurantQueueUiState
 import com.example.swa2502.presentation.viewmodel.queue.RestaurantQueueViewModel
 
 @Composable
-fun RestaurantQueueScreen(modifier: Modifier = Modifier) {
+fun RestaurantQueueScreen(
+    modifier: Modifier = Modifier,
+    onNavigateToDetail: (String) -> Unit
+) {
     val viewModel: RestaurantQueueViewModel = hiltViewModel()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
     RestaurantQueueScreenContent(
-        modifier = Modifier,
+        modifier = modifier,
         uiState = uiState.value,
+        onNavigateToDetail = onNavigateToDetail
     )
 }
 
@@ -48,6 +52,7 @@ fun RestaurantQueueScreen(modifier: Modifier = Modifier) {
 fun RestaurantQueueScreenContent(
     modifier: Modifier = Modifier,
     uiState: RestaurantQueueUiState,
+    onNavigateToDetail: (String) -> Unit
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -90,7 +95,7 @@ fun RestaurantQueueScreenContent(
                     occupiedSeats = restaurant.occupiedSeats,
                     totalSeats = restaurant.totalSeats,
                 ) {
-                    // TODO: 식당 대기열 상세 화면으로 이동
+                    onNavigateToDetail(restaurant.restaurantId)
                 }
                 Spacer(modifier = Modifier.size(20.dp))
             }
@@ -128,5 +133,6 @@ private fun RestaurantQueueScreenContentPreview() {
                 ),
             )
         ),
+        onNavigateToDetail = {}
     )
 }
