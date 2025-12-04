@@ -4,5 +4,6 @@ data class MenuItem(
     val menuId: Int,
     val name: String,
     val price: Int,
+    val imageUrl: String? = null,
     val isSoldOut: Boolean
 )

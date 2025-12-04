@@ -5,15 +5,25 @@ import com.example.swa2502.domain.repository.OrderRepository
 import com.example.swa2502.domain.model.CurrentOrderInfo
 import com.example.swa2502.domain.model.MenuItem
 import com.example.swa2502.domain.model.OrderItem
+import com.example.swa2502.data.dto.order.MenuDto
 import javax.inject.Inject
 
 class OrderRepositoryImpl @Inject constructor(
     private val remote: OrderDataSource
 ): OrderRepository {
-    override suspend fun getMenuList(restaurantId: Int): Result<List<MenuItem>> {
+    override suspend fun getMenuList(shopId: Int): Result<List<MenuItem>> {
         return try {
-            val list = remote.fetchMenuList(restaurantId)
-            Result.success(list)
+            val dtoList = remote.fetchMenuList(shopId)
+            val menuList = dtoList.map { dto ->
+                MenuItem(
+                    menuId = dto.menuId,
+                    name = dto.name,
+                    price = dto.price,
+                    imageUrl = dto.imageUrl,
+                    isSoldOut = dto.isSoldOut
+                )
+            }
+            Result.success(menuList)
         } catch (e: Exception) {
             Result.failure(e)
         }

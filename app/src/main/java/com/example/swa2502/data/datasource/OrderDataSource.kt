@@ -2,6 +2,7 @@ package com.example.swa2502.data.datasource
 
 import com.example.swa2502.data.api.OrderApi
 import com.example.swa2502.domain.model.MenuItem
+import com.example.swa2502.data.dto.order.MenuDto
 import javax.inject.Inject
 import com.example.swa2502.data.dto.order.CurrentOrderResponseDto
 
@@ -10,10 +11,10 @@ class OrderDataSource @Inject constructor(
 ) {
     /**
      * API를 통해 메뉴 목록 가져옴
-     * @param restaurantId
+     * @param shopId
      * **/
-    suspend fun fetchMenuList(restaurantId: Int): List<MenuItem>{
-        return api.getMenuList(restaurantId)
+    suspend fun fetchMenuList(shopId: Int): List<MenuDto>{
+        return api.getMenuList(shopId)
     }
 
     /**

@@ -1,20 +1,15 @@
 package com.example.swa2502.presentation.ui.order
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -33,7 +28,6 @@ import com.example.swa2502.presentation.viewmodel.order.MyOrderViewModel
 
 
 // 공통 스타일 및 색상 정의
-private val PretendardBold = FontFamily(Font(R.font.pretendard_bold))
 private val BackgroundGray = Color(0xFFF5F5F5)
 private val PrimaryColor = Color(0xFFFF9800)
 
@@ -45,7 +39,6 @@ fun MyOrderScreen(
     onCartClick: () -> Unit,
 ) {
     val viewModel: MyOrderViewModel = hiltViewModel()
-    // ViewModel 상태를 List<CurrentOrderInfo>로 변경했으므로, UiState도 그에 맞게 사용합니다.
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     MyOrderScreenContent(
@@ -137,7 +130,6 @@ fun MyOrderScreenContent(
 @Preview(showBackground = true)
 @Composable
 private fun MyOrderScreenContentPreview() {
-    // Repository에서 변환된 형식의 더미 데이터
     val dummyOrderList = listOf(
         CurrentOrderInfo(
             orderId = 2,

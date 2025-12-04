@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import com.example.swa2502.domain.model.MenuItem
-import com.example.swa2502.domain.repository.OrderRepository
+import com.example.swa2502.domain.usecase.order.GetMenuListUseCase // UseCase 임포트
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -22,12 +22,13 @@ data class OrderMenuUiState(
 
 @HiltViewModel
 class OrderMenuViewModel @Inject constructor(
-    private val orderRepository: OrderRepository
+    private val getMenuListUseCase: GetMenuListUseCase // UseCase 주입
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(OrderMenuUiState())
     val uiState: StateFlow<OrderMenuUiState> = _uiState.asStateFlow()
 
-    private val RESTAURANT_ID = 1
+    // TODO: Navigation Argument 등을 통해 실제 shopId를 받아와야 합니다.
+    private val SHOP_ID = 1
 
     init {
         fetchMenuList()
@@ -37,14 +38,16 @@ class OrderMenuViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            orderRepository.getMenuList(RESTAURANT_ID)
+            // UseCase 호출 및 SHOP_ID 전달
+            getMenuListUseCase(SHOP_ID)
                 .onSuccess { menuList ->
                     _uiState.update {
                         it.copy(
                             menuList = menuList,
                             isLoading = false,
-                            storeName = "가게이름",
-                            checkoutPrice = 5000
+                            // 실제 가게 이름 업데이트 (현재는 더미)
+                            storeName = "API 연동 가게 이름",
+                            checkoutPrice = 0 // 장바구니에 담긴 메뉴에 따라 계산
                         )
                     }
                 }
@@ -59,9 +62,12 @@ class OrderMenuViewModel @Inject constructor(
         }
     }
 
-    // ✅ 수정된 부분: OrderMenuViewModel 클래스의 멤버 함수로 이동
+    /**
+     * 메뉴 아이템 클릭 이벤트 처리
+     * @param menuItem 클릭된 메뉴 아이템
+     */
     fun onMenuItemClick(menuItem: MenuItem) {
-        // TODO: 메뉴 옵션 이동 네비게이션
+        // TODO: 장바구니 상태 업데이트, 분석 로깅 등 추가 비즈니스 로직 처리
         println("메뉴 클릭됨: ${menuItem.name}")
     }
 }
