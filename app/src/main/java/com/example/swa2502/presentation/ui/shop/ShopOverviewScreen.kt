@@ -56,6 +56,7 @@ fun ShopOverviewScreen(
     ShopOverviewScreenContent(
         modifier = Modifier,
         uiState = uiState.value,
+        onRestaurantSelected = viewModel::selectRestaurant,
         onNavigateToOrder = onNavigateToOrder
     )
 }
@@ -65,13 +66,11 @@ fun ShopOverviewScreen(
 fun ShopOverviewScreenContent(
     modifier: Modifier = Modifier,
     uiState: ShopOverviewUiState,
+    onRestaurantSelected: (Int) -> Unit,
     onNavigateToOrder: () -> Unit,
 ) {
     var dropdownExpanded by remember { mutableStateOf(false) }
-    val dropdownList = uiState.restaurantList
-    var selectedDropdownMenu by rememberSaveable { 
-        mutableStateOf(dropdownList.firstOrNull() ?: "")
-    }
+    val selectedRestaurant = uiState.restaurants.find { it.restaurantId == uiState.selectedRestaurantId }
     val scrollState = rememberScrollState()
 
     Column(
@@ -112,7 +111,7 @@ fun ShopOverviewScreenContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = selectedDropdownMenu,
+                    text = selectedRestaurant?.name ?: "레스토랑 선택",
                     style = TextStyle(
                         color = Color.Black,
                         fontSize = 16.sp,
@@ -137,13 +136,13 @@ fun ShopOverviewScreenContent(
                 offset = DpOffset(0.dp, 0.dp),
                 onDismissRequest = { dropdownExpanded = false }
             ) {
-                dropdownList.forEachIndexed { index, selectionOption ->
+                uiState.restaurants.forEach { restaurant ->
                     DropdownMenuItem(
                         modifier = Modifier
                             .background(color = Color(0xFFF5F5F5)),
                         text = {
                             Text(
-                                text = selectionOption,
+                                text = restaurant.name,
                                 style = TextStyle(
                                     fontSize = 16.sp,
                                     fontFamily = FontFamily(Font(R.font.pretendard_semibold))
@@ -151,9 +150,8 @@ fun ShopOverviewScreenContent(
                             ) 
                         },
                         onClick = {
-                            selectedDropdownMenu = dropdownList[index]
+                            onRestaurantSelected(restaurant.restaurantId)
                             dropdownExpanded = false
-                            // TODO: 선택된 식당의 가게들 정보 업데이트
                         }
                     )
                 }
@@ -210,6 +208,7 @@ private fun ShopOverviewScreenContentPreview() {
                 ),
             )
         ),
+        onRestaurantSelected = {},
         onNavigateToOrder = {}
     )
 }
