@@ -85,7 +85,10 @@ fun RestaurantQueueDetailScreenContent(
                     )
                     Text(
                         modifier = Modifier.align(Alignment.Center),
-                        text = "주문 대기열",
+                        text = if (uiState.restaurantName.isNotEmpty()) 
+                            "${uiState.restaurantName} - 주문 대기열" 
+                        else 
+                            "주문 대기열",
                         style = TextStyle(
                             color = Color.Black,
                             fontSize = 18.sp,

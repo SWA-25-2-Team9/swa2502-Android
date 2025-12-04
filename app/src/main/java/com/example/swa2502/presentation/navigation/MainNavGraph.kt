@@ -3,8 +3,10 @@ package com.example.swa2502.presentation.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.swa2502.presentation.ui.auth.LoginScreen
 import com.example.swa2502.presentation.ui.auth.SignUpScreen
 import com.example.swa2502.presentation.ui.manage.ManageQueueScreen
@@ -132,10 +134,18 @@ fun MainNavGraph(
         /* 혼잡도 */
         composable(route = Route.RestaurantQueue.route){
             RestaurantQueueScreen(
-                modifier = modifier
+                modifier = modifier,
+                onNavigateToDetail = { restaurantId ->
+                    navController.navigate(Route.RestaurantQueueDetail.createRoute(restaurantId))
+                }
             )
         }
-        composable(route = Route.RestaurantQueueDetail.route){
+        composable(
+            route = Route.RestaurantQueueDetail.route,
+            arguments = listOf(
+                navArgument("restaurantId") { type = NavType.StringType }
+            )
+        ){
             RestaurantQueueDetailScreen(
                 modifier = modifier,
                 onNavigateBack = {

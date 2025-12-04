@@ -23,7 +23,9 @@ sealed class Route(val route: String) {
 
     // 혼잡도 조회
     object RestaurantQueue: Route(route = "restaurantQueue")
-    object RestaurantQueueDetail: Route(route = "restaurantQueueDetail")
+    object RestaurantQueueDetail: Route(route = "restaurantQueueDetail/{restaurantId}") {
+        fun createRoute(restaurantId: String) = "restaurantQueueDetail/$restaurantId"
+    }
 
     // 마이페이지
     object MyPage: Route(route = "myPage")
