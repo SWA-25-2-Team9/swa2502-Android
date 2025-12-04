@@ -4,6 +4,7 @@ data class ShopQueueInfo(
     val shopId: String,
     val shopName: String,
     val shopState: String,
+    val waitingTime: Int,
     val ordersDone: List<Int>,
     val ordersInProgress: List<Int>
 )
