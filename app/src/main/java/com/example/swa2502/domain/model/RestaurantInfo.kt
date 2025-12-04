@@ -4,5 +4,6 @@ data class RestaurantInfo(
     val restaurantId: String,
     val restaurantName: String,
     val restaurantState: String,
-    val waitingTime: Int,
+    val occupiedSeats: Int,
+    val totalSeats: Int,
 )
