@@ -87,7 +87,8 @@ fun RestaurantQueueScreenContent(
                     restaurantId = restaurant.restaurantId,
                     restaurantState = restaurant.restaurantState,
                     restaurantName = restaurant.restaurantName,
-                    waitingTime = restaurant.waitingTime,
+                    occupiedSeats = restaurant.occupiedSeats,
+                    totalSeats = restaurant.totalSeats,
                 ) {
                     // TODO: 식당 대기열 상세 화면으로 이동
                 }
@@ -108,19 +109,22 @@ private fun RestaurantQueueScreenContentPreview() {
                     restaurantId = "111",
                     restaurantState = "여유",
                     restaurantName = "학생식당",
-                    waitingTime = 5,
+                    occupiedSeats = 10,
+                    totalSeats = 100,
                 ),
                 RestaurantInfo(
                     restaurantId = "222",
                     restaurantState = "조금 혼잡",
                     restaurantName = "도서관 식당",
-                    waitingTime = 10,
+                    occupiedSeats = 60,
+                    totalSeats = 100,
                 ),
                 RestaurantInfo(
                     restaurantId = "333",
                     restaurantState = "혼잡",
                     restaurantName = "식당3",
-                    waitingTime = 20,
+                    occupiedSeats = 80,
+                    totalSeats = 100,
                 ),
             )
         ),

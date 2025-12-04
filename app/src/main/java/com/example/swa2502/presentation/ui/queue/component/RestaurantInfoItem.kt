@@ -35,7 +35,8 @@ fun RestaurantInfoItem(
     restaurantId: String,
     restaurantState: String,
     restaurantName: String,
-    waitingTime: Int,
+    occupiedSeats: Int,
+    totalSeats: Int,
     onNavigateToRestaurantQueue: () -> Unit,
 ) {
     val stateColor = when (restaurantState) {
@@ -87,7 +88,7 @@ fun RestaurantInfoItem(
         Spacer(modifier = Modifier.size(8.dp))
         Text(
             modifier = Modifier,
-            text = "예상 대기 시간 : ${waitingTime}분",
+            text = "좌석 현황: ${occupiedSeats}/${totalSeats}",
             style = TextStyle(
                 color = Color(0xFF777777),
                 fontSize = 20.sp,
@@ -134,7 +135,8 @@ private fun RestaurantInfoItemPreview() {
             restaurantId = "111",
             restaurantState = "여유",
             restaurantName = "학생식당",
-            waitingTime = 5,
+            occupiedSeats = 10,
+            totalSeats = 100,
             onNavigateToRestaurantQueue = {}
         )
         Spacer(modifier = Modifier.size(20.dp))
@@ -142,7 +144,8 @@ private fun RestaurantInfoItemPreview() {
             restaurantId = "222",
             restaurantState = "조금 혼잡",
             restaurantName = "도서관 식당",
-            waitingTime = 10,
+            occupiedSeats = 50,
+            totalSeats = 100,
             onNavigateToRestaurantQueue = {}
         )
         Spacer(modifier = Modifier.size(20.dp))
@@ -150,7 +153,8 @@ private fun RestaurantInfoItemPreview() {
             restaurantId = "333",
             restaurantState = "혼잡",
             restaurantName = "식당3",
-            waitingTime = 20,
+            occupiedSeats = 80,
+            totalSeats = 100,
             onNavigateToRestaurantQueue = {}
         )
         Spacer(modifier = Modifier.size(20.dp))

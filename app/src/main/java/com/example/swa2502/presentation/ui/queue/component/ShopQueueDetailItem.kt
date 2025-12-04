@@ -37,6 +37,7 @@ fun ShopQueueDetailItem(
     shopId: String,
     shopState: String,
     shopName: String,
+    waitingTime: Int,
     ordersDone: List<Int>,
     ordersInProgress: List<Int>
 ) {
@@ -84,6 +85,16 @@ fun ShopQueueDetailItem(
                 color = Color(0xFF000000),
                 fontSize = 24.sp,
                 fontFamily = FontFamily(Font(R.font.pretendard_bold))
+            )
+        )
+        Spacer(modifier = Modifier.size(4.dp))
+        Text(
+            modifier = Modifier,
+            text = "예상 대기 시간 : ${waitingTime}분",
+            style = TextStyle(
+                color = Color(0xFF777777),
+                fontSize = 20.sp,
+                fontFamily = FontFamily(Font(R.font.pretendard_medium))
             )
         )
         Spacer(modifier = Modifier.size(8.dp))
@@ -177,6 +188,7 @@ private fun ShopQueueDetailItemPreview() {
             shopId = "111",
             shopState = "조금 혼잡",
             shopName = "학생식당",
+            waitingTime = 10,
             ordersDone = listOf(123, 234, 345),
             ordersInProgress = listOf(456, 567, 678, 789, 890, 900)
         )
@@ -185,6 +197,7 @@ private fun ShopQueueDetailItemPreview() {
             shopId = "222",
             shopState = "여유",
             shopName = "도서관 식당",
+            waitingTime = 2,
             ordersDone = listOf(111, 222),
             ordersInProgress = listOf(333, 444, 555)
         )
@@ -193,6 +206,7 @@ private fun ShopQueueDetailItemPreview() {
             shopId = "333",
             shopState = "혼잡",
             shopName = "식당3",
+            waitingTime = 20,
             ordersDone = listOf(111, 222),
             ordersInProgress = listOf(333, 444, 555)
         )

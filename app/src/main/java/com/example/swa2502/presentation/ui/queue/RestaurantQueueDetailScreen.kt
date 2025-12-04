@@ -111,6 +111,7 @@ fun RestaurantQueueDetailScreenContent(
                     shopId = shopQueueInfo.shopId,
                     shopState = shopQueueInfo.shopState,
                     shopName = shopQueueInfo.shopName,
+                    waitingTime = shopQueueInfo.waitingTime,
                     ordersDone = shopQueueInfo.ordersDone,
                     ordersInProgress = shopQueueInfo.ordersInProgress
                 )
@@ -131,6 +132,7 @@ private fun RestaurantQueueDetailScreenContentPreview() {
                     shopId = "111",
                     shopState = "조금 혼잡",
                     shopName = "학생식당",
+                    waitingTime = 10,
                     ordersDone = listOf(123, 234, 345),
                     ordersInProgress = listOf(456, 567, 678, 789, 890, 900)
                 ),
@@ -138,6 +140,7 @@ private fun RestaurantQueueDetailScreenContentPreview() {
                     shopId = "222",
                     shopState = "여유",
                     shopName = "도서관 식당",
+                    waitingTime = 2,
                     ordersDone = listOf(111, 222),
                     ordersInProgress = listOf(333, 444, 555)
                 ),
@@ -145,6 +148,7 @@ private fun RestaurantQueueDetailScreenContentPreview() {
                     shopId = "333",
                     shopState = "혼잡",
                     shopName = "식당3",
+                    waitingTime = 20,
                     ordersDone = listOf(111, 222),
                     ordersInProgress = listOf(333, 444, 555)
                 )
