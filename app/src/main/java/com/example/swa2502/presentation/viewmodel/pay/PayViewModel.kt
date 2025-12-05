@@ -7,6 +7,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import kotlinx.coroutines.flow.update
+import com.example.swa2502.domain.usecase.order.CreateOrderUseCase
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 enum class PaymentMethod {
     CARD,
@@ -22,7 +25,7 @@ data class PayUiState(
 
 @HiltViewModel
 class PayViewModel @Inject constructor(
-
+    private val createOrderUseCase: CreateOrderUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(PayUiState())
     val uiState: StateFlow<PayUiState> = _uiState.asStateFlow()
@@ -41,6 +44,37 @@ class PayViewModel @Inject constructor(
     fun selectPaymentMethod(method: PaymentMethod) {
         _uiState.update {
             it.copy(selectedPaymentMethod = method)
+        }
+    }
+
+    fun createOrder() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+
+            val methodString = when (_uiState.value.selectedPaymentMethod) {
+                PaymentMethod.CARD -> "CARD"
+                PaymentMethod.SIMPLE -> "SIMPLE"
+            }
+
+            // 실제 결제 로직 대신 주문 생성 API 호출
+            createOrderUseCase(methodString)
+                .onSuccess {
+                    // 결제 성공 및 주문 생성 완료
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+
+                        )
+                    }
+                }
+                .onFailure { error ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = error.message ?: "결제 및 주문 생성에 실패했습니다."
+                        )
+                    }
+                }
         }
     }
 }

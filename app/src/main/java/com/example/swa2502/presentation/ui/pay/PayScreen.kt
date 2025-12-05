@@ -23,6 +23,8 @@ import com.example.swa2502.presentation.viewmodel.pay.PayViewModel
 import com.example.swa2502.presentation.viewmodel.pay.PaymentMethod
 import java.text.NumberFormat
 import java.util.Locale
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material3.CircularProgressIndicator
 
 @Composable
 fun PayScreen(

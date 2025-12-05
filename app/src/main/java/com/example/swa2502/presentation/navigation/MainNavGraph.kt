@@ -127,8 +127,8 @@ fun MainNavGraph(
         composable(route = Route.Pay.route){
             PayScreen(
                 modifier = modifier,
-                onPayClick = {},
-                onBackClick = {}
+                onPayClick = {navController.navigate(Route.MyOrder.route)},
+                onBackClick = { navController.navigateUp() }
             )
         }
 
