@@ -5,8 +5,11 @@ import com.example.swa2502.data.dto.order.MenuDto
 import com.example.swa2502.data.dto.order.MenuDetailDto
 import com.example.swa2502.data.dto.order.CartStoreDto
 import com.example.swa2502.data.dto.order.CartItemUpdateDto
+import com.example.swa2502.data.dto.order.OrderRequestDto
+import com.example.swa2502.data.dto.order.OrderResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.POST
 import retrofit2.http.DELETE
 import retrofit2.http.PATCH
 import retrofit2.http.Body
@@ -28,6 +31,12 @@ interface OrderApi {
     suspend fun getMenuDetail(
         @Path("menuId") menuId: Int
     ): MenuDetailDto
+
+    // 주문 생성 API
+    @POST("api/v1/orders")
+    suspend fun createOrder(
+        @Body request: OrderRequestDto
+    ): List<OrderResponseDto>
 
     // 장바구니 조회 API
     @GET("api/v1/cart")
