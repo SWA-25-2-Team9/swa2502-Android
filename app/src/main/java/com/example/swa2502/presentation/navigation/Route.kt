@@ -13,7 +13,9 @@ sealed class Route(val route: String) {
 
     // 주문 관련
     object OrderMenu: Route(route = "orderMenu")
-    object MenuOption: Route(route = "menuOption")
+    object MenuOption: Route(route = "menuOption/{menuId}"){
+        fun createRoute(menuId: Int) = "menuOption/$menuId"
+    }
     object ShoppingCart: Route("shoppingCart")
     object MyOrder: Route("myOrder")
 
