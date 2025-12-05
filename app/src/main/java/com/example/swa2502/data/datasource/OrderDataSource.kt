@@ -6,6 +6,8 @@ import com.example.swa2502.data.dto.order.MenuDto
 import com.example.swa2502.data.dto.order.MenuDetailDto
 import javax.inject.Inject
 import com.example.swa2502.data.dto.order.CurrentOrderResponseDto
+import com.example.swa2502.data.dto.order.CartStoreDto
+import com.example.swa2502.data.dto.order.CartItemUpdateDto
 
 class OrderDataSource @Inject constructor(
     private val api: OrderApi
@@ -32,5 +34,27 @@ class OrderDataSource @Inject constructor(
      */
     suspend fun fetchMenuDetail(menuId: Int): MenuDetailDto {
         return api.getMenuDetail(menuId)
+    }
+
+    // 장바구니 정보 조회
+    suspend fun fetchShoppingCartInfo(): List<CartStoreDto> {
+        return api.getShoppingCartInfo()
+    }
+
+    // 장바구니 수량 변경
+    suspend fun updateCartItemQuantity(cartItemId: Int, quantity: Int) {
+        return api.updateCartItemQuantity(cartItemId, CartItemUpdateDto(quantity))
+    }
+
+    // 장바구니 항목 삭제
+    suspend fun deleteCartItem(cartItemId: Int): Int {
+        val response = api.deleteCartItem(cartItemId)
+        return response["cartCount"] ?: 0
+    }
+
+    // 장바구니 전체 비우기
+    suspend fun clearShoppingCart(): String {
+        val response = api.clearShoppingCart()
+        return response["message"] ?: "failed"
     }
 }

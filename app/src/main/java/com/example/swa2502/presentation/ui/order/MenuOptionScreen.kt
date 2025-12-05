@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.example.swa2502.R
 import com.example.swa2502.domain.model.MenuItem // MenuItem import
 import com.example.swa2502.presentation.ui.order.component.DividerGray
+import com.example.swa2502.presentation.ui.order.component.OptionGroupItem
 
 // ----------------------------------------------------
 // 1. 메인 화면 Composable
@@ -152,54 +153,6 @@ private fun MenuOptionScreenContent(
     }
 }
 
-
-// 컴포넌트: 옵션 그룹 아이템
-@Composable
-private fun OptionGroupItem(
-    optionGroup: OptionGroup,
-    onOptionSelected: (groupId: Int, optionId: Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        modifier = Modifier.fillMaxWidth().padding(16.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = optionGroup.name + if (optionGroup.isRequired) " (필수)" else " (선택)",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            HorizontalDivider(color = DividerGray)
-            optionGroup.options.forEach { option ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onOptionSelected(optionGroup.id, option.id) },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(
-                        selected = option.id == optionGroup.selectedOptionId,
-                        onClick = { onOptionSelected(optionGroup.id, option.id) },
-                        colors = RadioButtonDefaults.colors(selectedColor = Color(0xFFFF9800))
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = option.name,
-                        fontSize = 15.sp,
-                        modifier = Modifier.weight(1f)
-                    )
-                    if (option.price > 0) {
-                        Text(text = "+${String.format("%,d", option.price)}원", fontSize = 15.sp, color = Color(0xFF777777))
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Preview(showBackground = true, name = "메뉴 옵션 화면 Preview")
 @Composable
