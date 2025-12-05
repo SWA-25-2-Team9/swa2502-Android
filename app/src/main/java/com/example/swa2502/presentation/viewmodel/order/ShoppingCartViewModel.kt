@@ -7,21 +7,29 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
+import com.example.swa2502.domain.usecase.order.GetShoppingCartInfoUseCase
+import com.example.swa2502.domain.usecase.order.UpdateCartItemQuantityUseCase
+import com.example.swa2502.domain.usecase.order.DeleteCartItemUseCase
+import com.example.swa2502.domain.usecase.order.ClearShoppingCartUseCase
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import com.example.swa2502.domain.model.CartStore as DomainCartStore // ✅ Domain 모델은 매핑에 사용하기 위해 별칭 임포트
 
 // ----------------------------------------------------
-// 1. 데이터 모델 정의
+// 1. Presentation Layer 데이터 모델 정의 (Int ID 통일)
+// 이 모델이 UI(ShoppingCartScreen)에서 사용됩니다.
 // ----------------------------------------------------
 data class CartOption(val name: String)
 data class CartMenu(
-    val menuId: Long, // 메뉴를 식별할 ID
+    val menuId: Int, // ⚠️ Long -> Int 수정
     val menuName: String,
     val quantity: Int,
     val options: List<CartOption>,
-    val totalPrice: Int, // 이 메뉴와 옵션, 수량의 총 가격 (단가 * 수량)
-    val storeId: Long,
+    val totalPrice: Int,
+    val storeId: Int, // ⚠️ Long -> Int 수정
 )
 data class CartStore(
-    val storeId: Long,
+    val storeId: Int, // ⚠️ Long -> Int 수정
     val storeName: String,
     val cartMenus: List<CartMenu>,
 )
@@ -31,8 +39,8 @@ data class CartStore(
 // ----------------------------------------------------
 data class ShoppingCartUiState(
     val isLoading: Boolean = false,
-    val totalAmount: Int = 0, // 전체 결제 금액
-    val cartStores: List<CartStore> = emptyList(),
+    val totalAmount: Int = 0,
+    val cartStores: List<CartStore> = emptyList(), // ✅ Presentation Model 사용
     val errorMessage: String? = null,
 )
 
@@ -41,79 +49,108 @@ data class ShoppingCartUiState(
 // ----------------------------------------------------
 @HiltViewModel
 class ShoppingCartViewModel @Inject constructor(
-    // private val orderRepository: OrderRepository // 실제 데이터 로직을 위한 의존성
+    private val getShoppingCartInfoUseCase: GetShoppingCartInfoUseCase,
+    private val updateCartItemQuantityUseCase: UpdateCartItemQuantityUseCase,
+    private val deleteCartItemUseCase: DeleteCartItemUseCase,
+    private val clearShoppingCartUseCase: ClearShoppingCartUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ShoppingCartUiState())
     val uiState: StateFlow<ShoppingCartUiState> = _uiState.asStateFlow()
 
     init {
-        // 실제로는 Repository를 통해 카트 데이터를 불러오는 로직이 들어갑니다.
-        loadShoppingCartData()
+        loadShoppingCartInfo()
     }
 
-    private fun loadShoppingCartData() {
-        // 더미 데이터
-        val dummyMenus1 = listOf(
-            CartMenu(
-                menuId = 101,
-                menuName = "아메리카노",
-                quantity = 1,
-                options = listOf(CartOption("ICE (+500원)")),
-                totalPrice = 5000, // 4500 + 500
-                storeId = 1,
-            ),
-            CartMenu(
-                menuId = 102,
-                menuName = "카페라떼",
-                quantity = 2,
-                options = listOf(CartOption("HOT"), CartOption("샷 추가 (+500원)")),
-                totalPrice = 11000, // (5000 + 500) * 2 = 11000
-                storeId = 1,
-            ),
-        )
+    private fun loadShoppingCartInfo() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-        val dummyMenus2 = listOf(
-            CartMenu(
-                menuId = 201,
-                menuName = "크루아상",
-                quantity = 3,
-                options = emptyList(),
-                totalPrice = 9000, // 3000 * 3
-                storeId = 2,
-            ),
-        )
+            getShoppingCartInfoUseCase()
+                .onSuccess { domainCartStores ->
+                    // ✅ Domain Model -> Presentation Model 매핑
+                    val presentationCartStores = domainCartStores.map { domainStore ->
+                        CartStore(
+                            storeId = domainStore.storeId,
+                            storeName = domainStore.storeName,
+                            cartMenus = domainStore.cartMenus.map { domainMenu ->
+                                CartMenu(
+                                    menuId = domainMenu.menuId,
+                                    menuName = domainMenu.menuName,
+                                    quantity = domainMenu.quantity,
+                                    options = domainMenu.options.map { domainOption ->
+                                        CartOption(name = domainOption.name)
+                                    },
+                                    totalPrice = domainMenu.totalPrice,
+                                    storeId = domainMenu.storeId
+                                )
+                            }
+                        )
+                    }
 
-        val dummyStores = listOf(
-            CartStore(storeId = 1, storeName = "커피하우스 1호점", cartMenus = dummyMenus1),
-            CartStore(storeId = 2, storeName = "프리미엄 베이커리", cartMenus = dummyMenus2),
-        )
-
-        val total = dummyStores.sumOf { store -> store.cartMenus.sumOf { it.totalPrice } }
-
-        _uiState.update {
-            it.copy(
-                cartStores = dummyStores,
-                totalAmount = total,
-                isLoading = false
-            )
+                    val total = presentationCartStores.sumOf { store -> store.cartMenus.sumOf { it.totalPrice } }
+                    _uiState.update {
+                        it.copy(
+                            cartStores = presentationCartStores,
+                            totalAmount = total,
+                            isLoading = false,
+                            errorMessage = null
+                        )
+                    }
+                }
+                .onFailure { error ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            cartStores = emptyList(),
+                            totalAmount = 0,
+                            errorMessage = error.message ?: "장바구니 정보를 불러오는 데 실패했습니다."
+                        )
+                    }
+                }
         }
     }
 
-    // 카트 수량 증가/감소 (구현 필요)
-    fun onQuantityChange(menuId: Long, newQuantity: Int) {
-        // TODO: menuId를 찾아 수량을 변경하고 총 금액을 다시 계산하는 로직 구현
-        println("메뉴 $menuId 수량 변경: $newQuantity")
+    // ✅ 카트 수량 증가/감소 (ID 타입을 Int로 통일)
+    fun onQuantityChange(menuId: Int, newQuantity: Int) {
+        if (newQuantity <= 0) return
+
+        viewModelScope.launch {
+            updateCartItemQuantityUseCase(menuId, newQuantity)
+                .onSuccess { loadShoppingCartInfo() }
+                .onFailure { error ->
+                    _uiState.update { it.copy(errorMessage = error.message ?: "수량 변경에 실패했습니다.") }
+                    loadShoppingCartInfo()
+                }
+        }
     }
 
-    // 메뉴 삭제 (구현 필요)
-    fun onDeleteMenu(menuId: Long) {
-        // TODO: menuId를 가진 메뉴를 카트에서 삭제하고 총 금액을 다시 계산하는 로직 구현
-        println("메뉴 $menuId 삭제")
+    // ✅ 메뉴 삭제 (ID 타입을 Int로 통일)
+    fun onDeleteMenu(menuId: Int) {
+        viewModelScope.launch {
+            deleteCartItemUseCase(menuId)
+                .onSuccess { loadShoppingCartInfo() }
+                .onFailure { error ->
+                    _uiState.update { it.copy(errorMessage = error.message ?: "메뉴 삭제에 실패했습니다.") }
+                    loadShoppingCartInfo()
+                }
+        }
     }
 
-    // 가게 메뉴 전체 삭제 (구현 필요)
-    fun onDeleteStore(storeId: Long) {
-        // TODO: storeId를 가진 가게의 모든 메뉴를 카트에서 삭제하고 총 금액을 다시 계산하는 로직 구현
-        println("가게 $storeId 전체 삭제")
+    // ✅ 가게 메뉴 전체 삭제 (장바구니 전체 비우기로 대체, ID 타입을 Int로 통일)
+    fun onDeleteStore(storeId: Int) {
+        viewModelScope.launch {
+            clearShoppingCartUseCase()
+                .onSuccess {
+                    _uiState.update { it.copy(cartStores = emptyList(), totalAmount = 0, errorMessage = null, isLoading = false) }
+                }
+                .onFailure { error ->
+                    _uiState.update { it.copy(errorMessage = error.message ?: "장바구니 전체 비우기에 실패했습니다.") }
+                    loadShoppingCartInfo()
+                }
+        }
+    }
+
+    fun refreshShoppingCart() {
+        loadShoppingCartInfo()
     }
 }

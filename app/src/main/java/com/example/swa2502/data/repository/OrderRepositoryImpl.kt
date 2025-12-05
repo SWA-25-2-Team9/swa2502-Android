@@ -9,6 +9,9 @@ import com.example.swa2502.data.dto.order.MenuDto
 import com.example.swa2502.domain.model.MenuDetail
 import com.example.swa2502.domain.model.OptionGroup
 import com.example.swa2502.domain.model.OptionItem
+import com.example.swa2502.domain.model.CartStore
+import com.example.swa2502.domain.model.CartMenu
+import com.example.swa2502.domain.model.CartOption
 import javax.inject.Inject
 
 class OrderRepositoryImpl @Inject constructor(
@@ -85,6 +88,58 @@ class OrderRepositoryImpl @Inject constructor(
             Result.success(menuDetail)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    // 장바구니 정보 조회
+    override suspend fun getShoppingCartInfo(): Result<List<CartStore>> {
+        return try {
+            val dtoList = remote.fetchShoppingCartInfo()
+            // DTO to Domain Model 매핑
+            val domainList = dtoList.map { dto ->
+                CartStore(
+                    storeId = dto.storeId,
+                    storeName = dto.storeName,
+                    cartMenus = dto.cartMenus.map { menuDto ->
+                        CartMenu(
+                            menuId = menuDto.menuId,
+                            menuName = menuDto.menuName,
+                            quantity = menuDto.quantity,
+                            options = menuDto.options.map { optionDto ->
+                                CartOption(name = optionDto.name)
+                            },
+                            totalPrice = menuDto.totalPrice,
+                            storeId = menuDto.storeId
+                        )
+                    }
+                )
+            }
+            Result.success(domainList)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // 장바구니 항목 수량 변경
+    override suspend fun updateCartItemQuantity(cartItemId: Int, quantity: Int): Result<Unit> {
+        return runCatching {
+            remote.updateCartItemQuantity(cartItemId, quantity)
+            Unit
+        }
+    }
+
+    // 장바구니 항목 삭제 (메뉴 삭제)
+    override suspend fun deleteCartItem(cartItemId: Int): Result<Int> {
+        return runCatching {
+            remote.deleteCartItem(cartItemId)
+        }
+    }
+
+    // 장바구니 전체 비우기 (가게 전체 삭제 대신 사용)
+    override suspend fun clearShoppingCart(): Result<Unit> {
+        return runCatching {
+            remote.clearShoppingCart()
+            Unit
         }
     }
 }
