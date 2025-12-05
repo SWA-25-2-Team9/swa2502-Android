@@ -7,85 +7,73 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
+import androidx.lifecycle.viewModelScope
+import com.example.swa2502.domain.model.OptionItem
+import com.example.swa2502.domain.model.OptionGroup
+import com.example.swa2502.domain.usecase.order.GetMenuDetailUseCase
+import kotlinx.coroutines.launch
+import androidx.lifecycle.SavedStateHandle
 
-// ----------------------------------------------------
-// 1. 데이터 모델 정의
-// ----------------------------------------------------
-data class OptionItem(
-    val id: Int,
-    val name: String,
-    val price: Int, // 추가 가격 (0원 이상)
-)
 
-data class OptionGroup(
-    val id: Int,
-    val name: String,
-    val isRequired: Boolean, // 필수 선택 여부
-    val options: List<OptionItem>,
-    val selectedOptionId: Int? = null // 선택된 옵션 ID
-)
 
-// ----------------------------------------------------
-// 2. UI 상태 정의
-// ----------------------------------------------------
+// ui 상태 정의
 data class MenuOptionUiState(
     val isLoading: Boolean = false,
     val menuName: String = "메뉴 이름",
-    val basePrice: Int = 4500,
+    val basePrice: Int = 0,
     val optionGroups: List<OptionGroup> = emptyList(),
     val quantity: Int = 1, // 수량은 현재 1로 고정
-    val totalAmount: Int = 4500,
+    val totalAmount: Int = 0,
     val errorMessage: String? = null,
 )
 
-// ----------------------------------------------------
-// 3. ViewModel 구현
-// ----------------------------------------------------
+
 @HiltViewModel
 class MenuOptionViewModel @Inject constructor(
-    // private val orderRepository: OrderRepository // 추후 Repository 사용 시 주입
+    private val getMenuDetailUseCase: GetMenuDetailUseCase,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MenuOptionUiState())
     val uiState: StateFlow<MenuOptionUiState> = _uiState.asStateFlow()
 
+    private val menuId: Int = savedStateHandle.get<Int>("menuId") ?: -1
+
     init {
-        // 실제로는 Navigation Argument로 받은 메뉴 ID를 이용해 메뉴 상세 정보를 로드합니다.
-        // 여기서는 더미 데이터를 사용합니다.
-        loadMenuDetail(menuItemId = 1)
+        if (menuId != -1) {
+            loadMenuOption()
+        } else {
+            _uiState.update { it.copy(errorMessage = "메뉴 ID를 찾을 수 없습니다.") }
+        }
     }
 
-    private fun loadMenuDetail(menuItemId: Int) {
-        // 이미지 화면에 맞춘 더미 데이터
-        val dummyOptionGroups = listOf(
-            OptionGroup(
-                id = 1,
-                name = "온도",
-                isRequired = true,
-                options = listOf(
-                    OptionItem(id = 101, name = "HOT", price = 0),
-                    OptionItem(id = 102, name = "ICE (+500원)", price = 500)
-                ),
-                selectedOptionId = 101 // 기본 선택
-            ),
-            OptionGroup(
-                id = 2,
-                name = "사이즈",
-                isRequired = false,
-                options = listOf(
-                    OptionItem(id = 201, name = "Large (+500원)", price = 500),
-                    OptionItem(id = 202, name = "Extra Large (+1000원)", price = 1000)
-                ),
-                selectedOptionId = 201 // 기본 선택
-            )
-        )
-        val basePrice = 4500 // 아메리카노 기준
-        _uiState.update {
-            it.copy(
-                menuName = "아메리카노",
-                basePrice = basePrice,
-                optionGroups = dummyOptionGroups,
-                totalAmount = calculateTotal(basePrice, 1, dummyOptionGroups)
-            )
+    private fun loadMenuOption() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+
+            getMenuDetailUseCase(menuId)
+                .onSuccess { menuDetail ->
+                    // 초기 총 금액 계산 (기본 가격 + 기본 선택 옵션 가격)
+                    val initialTotal = calculateTotal(menuDetail.basePrice, _uiState.value.quantity, menuDetail.optionGroups)
+
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            menuName = menuDetail.name,
+                            basePrice = menuDetail.basePrice,
+                            optionGroups = menuDetail.optionGroups,
+                            totalAmount = initialTotal,
+                            errorMessage = null
+                        )
+                    }
+                }
+                .onFailure { error ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = error.message ?: "메뉴 옵션 정보를 불러오는 데 실패했습니다."
+                        )
+                    }
+                }
         }
     }
 
@@ -102,6 +90,22 @@ class MenuOptionViewModel @Inject constructor(
 
         _uiState.update {
             it.copy(optionGroups = newGroups, totalAmount = newTotal)
+        }
+    }
+
+    // 수량 증가
+    fun onQuantityIncrease() {
+        val newQuantity = _uiState.value.quantity + 1
+        val newTotal = calculateTotal(_uiState.value.basePrice, newQuantity, _uiState.value.optionGroups)
+        _uiState.update { it.copy(quantity = newQuantity, totalAmount = newTotal) }
+    }
+
+    // 수량 감소
+    fun onQuantityDecrease() {
+        if (_uiState.value.quantity > 1) {
+            val newQuantity = _uiState.value.quantity - 1
+            val newTotal = calculateTotal(_uiState.value.basePrice, newQuantity, _uiState.value.optionGroups)
+            _uiState.update { it.copy(quantity = newQuantity, totalAmount = newTotal) }
         }
     }
 

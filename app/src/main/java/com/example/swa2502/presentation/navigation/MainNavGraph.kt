@@ -86,17 +86,24 @@ fun MainNavGraph(
                     navController.navigate(Route.ShoppingCart.route)
                 },
                 onNavigateToMenuOption = { menuItem ->
-                    navController.navigate(Route.MenuOption.route)
+                    navController.navigate(Route.MenuOption.createRoute(menuItem.menuId))
                 }
             )
         }
 
-        composable(route = Route.MenuOption.route){
+        composable(
+            route = Route.MenuOption.route,
+            arguments = listOf(
+                navArgument("menuId") { type = NavType.IntType }
+            )
+        ){
             MenuOptionScreen(
                 modifier = modifier,
-                onBackClick = { navController.navigateUp() }, // 뒤로가기
-                onAddToCartClick = { navController.navigate(Route.ShoppingCart.route) }, // 카트로 이동
-                onCartClick = { navController.navigate(Route.ShoppingCart.route) }
+                onBackClick = { navController.navigateUp() },
+                onCartClick = { navController.navigate(Route.ShoppingCart.route) },
+                onAddToCartClick = {
+                    navController.navigate(Route.OrderMenu.route)
+                }
             )
         }
 

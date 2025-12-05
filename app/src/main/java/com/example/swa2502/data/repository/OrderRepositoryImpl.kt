@@ -6,6 +6,9 @@ import com.example.swa2502.domain.model.CurrentOrderInfo
 import com.example.swa2502.domain.model.MenuItem
 import com.example.swa2502.domain.model.OrderItem
 import com.example.swa2502.data.dto.order.MenuDto
+import com.example.swa2502.domain.model.MenuDetail
+import com.example.swa2502.domain.model.OptionGroup
+import com.example.swa2502.domain.model.OptionItem
 import javax.inject.Inject
 
 class OrderRepositoryImpl @Inject constructor(
@@ -29,16 +32,17 @@ class OrderRepositoryImpl @Inject constructor(
         }
     }
 
+    // 현재 주문
     override suspend fun getCurrentOrder(): Result<List<CurrentOrderInfo>> {
         return runCatching {
             remote.getCurrentOrder().map { dto ->
                 CurrentOrderInfo(
                     orderId = dto.orderId,
-                    orderNumber = "${dto.orderNumber}번", // UI 표시 형식으로 변환
+                    orderNumber = "${dto.orderNumber}번",
                     shopName = dto.shopName,
                     myTurn = dto.myTurn,
                     etaMinutes = dto.etaMinutes,
-                    estimatedWaitTime = "약 ${dto.etaMinutes}분 예상", // UI 표시 형식으로 변환
+                    estimatedWaitTime = "약 ${dto.etaMinutes}분 예상",
                     totalPrice = dto.totalPrice,
                     orderedAt = dto.orderedAt,
                     items = dto.items.map { itemDto ->
@@ -51,6 +55,36 @@ class OrderRepositoryImpl @Inject constructor(
                     }
                 )
             }
+        }
+    }
+
+    override suspend fun getMenuDetail(menuId: Int): Result<MenuDetail> {
+        return try {
+            val dto = remote.fetchMenuDetail(menuId)
+            val menuDetail = MenuDetail(
+                menuId = dto.menuId,
+                name = dto.name,
+                basePrice = dto.price,
+                optionGroups = dto.optionGroups.map { groupDto ->
+                    OptionGroup(
+                        id = groupDto.id,
+                        name = groupDto.name,
+                        isRequired = groupDto.isRequired,
+                        options = groupDto.options.map { itemDto ->
+                            OptionItem(
+                                id = itemDto.id,
+                                name = itemDto.name,
+                                price = itemDto.price
+                            )
+                        },
+                        // **기본 선택 로직**: 필수 옵션 그룹이거나 선택 옵션 그룹일 경우 첫 번째 옵션을 선택
+                        selectedOptionId = if (groupDto.options.isNotEmpty()) groupDto.options.first().id else null
+                    )
+                }
+            )
+            Result.success(menuDetail)
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 }

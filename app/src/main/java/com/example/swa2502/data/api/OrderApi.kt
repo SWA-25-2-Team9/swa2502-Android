@@ -2,6 +2,7 @@ package com.example.swa2502.data.api
 
 import com.example.swa2502.data.dto.order.CurrentOrderResponseDto
 import com.example.swa2502.data.dto.order.MenuDto
+import com.example.swa2502.data.dto.order.MenuDetailDto
 import retrofit2.http.GET
 import retrofit2.http.Path
 interface OrderApi {
@@ -16,4 +17,10 @@ interface OrderApi {
     // 나의 현재 주문 정보 조회 API 추가
     @GET("api/v1/orders/current")
     suspend fun getCurrentOrder(): List<CurrentOrderResponseDto>
+
+    // 메뉴 옵션 API
+    @GET("api/v1/menus/{menuId}")
+    suspend fun getMenuDetail(
+        @Path("menuId") menuId: Int
+    ): MenuDetailDto
 }

@@ -1,15 +1,16 @@
+// 📂 presentation/ui/order/MenuOptionScreen.kt (수정)
 package com.example.swa2502.presentation.ui.order
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,15 +18,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.draw.clip
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.swa2502.presentation.viewmodel.order.MenuOptionUiState
 import com.example.swa2502.presentation.viewmodel.order.MenuOptionViewModel
-import com.example.swa2502.presentation.viewmodel.order.OptionGroup
-import com.example.swa2502.presentation.viewmodel.order.OptionItem
+import com.example.swa2502.domain.model.OptionGroup // Domain 모델 임포트
+import com.example.swa2502.domain.model.OptionItem // Domain 모델 임포트
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import com.example.swa2502.R
+import com.example.swa2502.domain.model.MenuItem // MenuItem import
+import com.example.swa2502.presentation.ui.order.component.DividerGray
 
 // ----------------------------------------------------
 // 1. 메인 화면 Composable
@@ -34,56 +39,35 @@ import com.example.swa2502.R
 fun MenuOptionScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
-    onAddToCartClick: () -> Unit,
     onCartClick: () -> Unit,
+    onAddToCartClick: () -> Unit,
 ) {
     val viewModel: MenuOptionViewModel = hiltViewModel()
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
     MenuOptionScreenContent(
         modifier = modifier,
-        uiState = uiState.value,
+        uiState = uiState,
         onBackClick = onBackClick,
-        onAddToCartClick = onAddToCartClick,
-        onCartClick = onCartClick,
-        onOptionSelected = viewModel::onOptionSelected // ViewModel 함수 연결
+        onOptionSelected = viewModel::onOptionSelected,
+        onCartClick = onBackClick,
+//        onAddToCartClick = onAddToCartClick
     )
 }
 
 // ----------------------------------------------------
-// 2. Content Composable (모든 UI 요소 포함)
+// 2. 화면 내용 Composable
 // ----------------------------------------------------
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MenuOptionScreenContent(
+private fun MenuOptionScreenContent(
     modifier: Modifier = Modifier,
     uiState: MenuOptionUiState,
     onBackClick: () -> Unit,
-    onAddToCartClick: () -> Unit,
-    onCartClick: () -> Unit,
     onOptionSelected: (groupId: Int, optionId: Int) -> Unit,
+    onCartClick: () -> Unit,
+//    onAddToCartClick: () -> Unit,
 ) {
-
-    // BottomBar
-//    @Composable
-//    fun MenuOptionBottomBar() {
-//        Button(
-//            onClick = onAddToCartClick,
-//            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)), // #FF9800
-//            shape = RoundedCornerShape(0.dp),
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(56.dp)
-//        ) {
-//            Text(
-//                text = "${String.format("%,d", uiState.totalAmount)}원 카트에 담기",
-//                fontSize = 18.sp,
-//                fontWeight = FontWeight.Bold,
-//                color = Color.White
-//            )
-//        }
-//    }
-
     Scaffold(
         topBar = {
             // Header 구현 (layout_header)
@@ -94,7 +78,6 @@ fun MenuOptionScreenContent(
                     .background(Color.White)
                     .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 // 뒤로가기 아이콘
                 Icon(
@@ -108,16 +91,18 @@ fun MenuOptionScreenContent(
 
                 // 메뉴 이름
                 Text(
-                    text = uiState.menuName,
+                    text = "${uiState.menuName}",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = Color.Black,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center
                 )
 
-                // 카트 아이콘 (icon_cart)
+                // 카트 아이콘
                 Icon(
-                    imageVector = Icons.Filled.ShoppingCart,
-                    contentDescription = "장바구니",
+                    painter = painterResource(id = R.drawable.ic_cart_orange),
+                    contentDescription = "카트",
                     tint = Color(0xFFFF9800),
                     modifier = Modifier
                         .size(24.dp)
@@ -125,89 +110,61 @@ fun MenuOptionScreenContent(
                 )
             }
         },
-        bottomBar = {
-            // 하단 결제 버튼 (button_checkout)
-            Button(
-                onClick = onAddToCartClick,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)), // #FF9800
-                shape = RoundedCornerShape(0.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-            ) {
-                Text(
-                    text = "${String.format("%,d", uiState.totalAmount)}원 카트에 담기",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-            }
-        },
-        modifier = modifier.background(Color(0xFFF5F5F5)) // 배경색 #F5F5F5
+
     ) { paddingValues ->
-        // 옵션 목록
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 8.dp)
-                .background(Color(0xFFF5F5F5)),
-            contentPadding = PaddingValues(vertical = 8.dp),
-        ) {
-            item {
-                // 3. 옵션 그룹 목록
-                uiState.optionGroups.forEach { group ->
-                    // OptionGroupSection Composable은 별도 파일 또는 이 파일 하단에 정의되어야 합니다.
-                    // 현재는 더미 호출을 사용합니다.
-                    OptionGroupSection(
+        // 로딩 및 에러 처리
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else if (uiState.errorMessage != null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("오류: ${uiState.errorMessage}", color = Color.Red)
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentPadding = PaddingValues(bottom = 16.dp)
+            ) {
+                // 옵션 그룹
+                items(uiState.optionGroups) { group ->
+                    OptionGroupItem(
                         optionGroup = group,
                         onOptionSelected = onOptionSelected
                     )
                 }
+
+
             }
         }
     }
 }
 
 
-// ----------------------------------------------------
-// 3. Preview Composable
-// ----------------------------------------------------
-@Preview(showBackground = true)
+// 컴포넌트: 옵션 그룹 아이템
 @Composable
-private fun MenuOptionScreenContentPreview() {
-    val dummyState = MenuOptionUiState(
-        menuName = "아메리카노",
-        basePrice = 4500,
-        optionGroups = listOf(
-            OptionGroup(1, "온도", true, listOf(OptionItem(101, "HOT", 0), OptionItem(102, "ICE (+500원)", 500)), 101),
-            OptionGroup(2, "사이즈", false, listOf(OptionItem(201, "Large (+500원)", 500), OptionItem(202, "Extra Large (+1000원)", 1000)), 201)
-        ),
-        totalAmount = 5000 // 예시 가격 (4500 + 500)
-    )
-
-    // Preview에서는 실제 navigation이나 ViewModel 호출 없이 더미 함수를 사용합니다.
-    MenuOptionScreenContent(
-        uiState = dummyState,
-        onBackClick = {},
-        onAddToCartClick = {},
-        onCartClick = {},
-        onOptionSelected = { _, _ -> }
-    )
-}
-
-@Composable
-fun OptionGroupSection(
+private fun OptionGroupItem(
     optionGroup: OptionGroup,
-    onOptionSelected: (groupId: Int, optionId: Int) -> Unit
+    onOptionSelected: (groupId: Int, optionId: Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Card(
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
+        modifier = Modifier.fillMaxWidth().padding(16.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -216,6 +173,7 @@ fun OptionGroupSection(
                 fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(8.dp))
+            HorizontalDivider(color = DividerGray)
             optionGroup.options.forEach { option ->
                 Row(
                     modifier = Modifier
@@ -241,4 +199,68 @@ fun OptionGroupSection(
             }
         }
     }
+}
+
+@Preview(showBackground = true, name = "메뉴 옵션 화면 Preview")
+@Composable
+private fun MenuOptionScreenContentPreview() {
+    // 1. 더미 옵션 항목 정의
+    val dummyOptionItems1 = listOf(
+        OptionItem(101, "보통 맛", 0),
+        OptionItem(102, "매운 맛 (+500원)", 500),
+        OptionItem(103, "아주 매운 맛 (+1000원)", 1000)
+    )
+
+    val dummyOptionItems2 = listOf(
+        OptionItem(201, "기본", 0),
+        OptionItem(202, "고기 추가 (+500원)", 500),
+        OptionItem(203, "계란 추가 (+300원)", 300)
+    )
+
+    // 2. 더미 옵션 그룹 정의
+    val dummyOptionGroups = listOf(
+        OptionGroup(
+            id = 1,
+            name = "맵기 선택",
+            isRequired = true,
+            options = dummyOptionItems1,
+            selectedOptionId = dummyOptionItems1.first().id // 첫 번째 옵션 기본 선택
+        ),
+        OptionGroup(
+            id = 2,
+            name = "추가 옵션",
+            isRequired = false,
+            options = dummyOptionItems2,
+            selectedOptionId = null // 기본 선택 없음
+        )
+    )
+
+    // 3. 기본 가격 및 초기 총 금액 계산
+    val basePrice = 4500
+    val quantity = 1
+
+    // 초기 총 금액 계산 (기본 가격 + 기본 선택 옵션 가격)
+    val initialTotal = basePrice + (dummyOptionGroups.sumOf { group ->
+        group.options.find { it.id == group.selectedOptionId }?.price ?: 0
+    }) * quantity
+
+    // 4. UI 상태 생성
+    val previewUiState = MenuOptionUiState(
+        isLoading = false,
+        menuName = "제육덮밥",
+        basePrice = basePrice,
+        optionGroups = dummyOptionGroups,
+        quantity = quantity,
+        totalAmount = initialTotal, // 5000원 (4500 + 500)
+        errorMessage = null,
+    )
+
+    // 5. Preview Content 호출
+    MenuOptionScreenContent(
+        modifier = Modifier,
+        uiState = previewUiState,
+        onBackClick = {},
+        onCartClick = {},
+        onOptionSelected = { _, _->}
+    )
 }

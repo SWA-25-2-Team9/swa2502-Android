@@ -3,6 +3,7 @@ package com.example.swa2502.data.datasource
 import com.example.swa2502.data.api.OrderApi
 import com.example.swa2502.domain.model.MenuItem
 import com.example.swa2502.data.dto.order.MenuDto
+import com.example.swa2502.data.dto.order.MenuDetailDto
 import javax.inject.Inject
 import com.example.swa2502.data.dto.order.CurrentOrderResponseDto
 
@@ -23,5 +24,13 @@ class OrderDataSource @Inject constructor(
      */
     suspend fun getCurrentOrder(): List<CurrentOrderResponseDto> {
         return api.getCurrentOrder()
+    }
+
+    /**
+     * API를 통해 특정 메뉴의 상세 옵션 정보 가져옴
+     * @param menuId
+     */
+    suspend fun fetchMenuDetail(menuId: Int): MenuDetailDto {
+        return api.getMenuDetail(menuId)
     }
 }
