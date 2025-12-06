@@ -7,13 +7,15 @@ import kotlinx.serialization.Serializable
 data class QueueInfoDto(
     @SerialName("restaurantId")
     val restaurantId: Int,
-    @SerialName("restaurantName")
+    @SerialName("name")
     val restaurantName: String,
     @SerialName("occupancyRate")
     val occupancyRate: Double,
     @SerialName("occupiedSeats")
     val occupiedSeats: Int,
     @SerialName("totalSeats")
-    val totalSeats: Int
+    val totalSeats: Int,
+    @SerialName("level")
+    val level: String
 )
 
