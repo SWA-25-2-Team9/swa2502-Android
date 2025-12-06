@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 data class RestaurantCongestionDto(
     @SerialName("restaurantId")
     val restaurantId: Int,
-    @SerialName("name")
+    @SerialName("restaurantName")
     val name: String,
     @SerialName("occupancyRate")
     val occupancyRate: Double,

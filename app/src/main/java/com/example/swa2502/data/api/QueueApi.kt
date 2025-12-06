@@ -7,7 +7,7 @@ import retrofit2.http.Path
 
 interface QueueApi {
     // 실제 API 요청을 보내는 함수를 작성
-    @GET("api/v1/queue/info")
+    @GET("api/v1/restaurants")
     suspend fun getQueueInfo(): List<QueueInfoDto>
 
     @GET("api/v1/restaurants/{restaurantId}/shops/congestion")
