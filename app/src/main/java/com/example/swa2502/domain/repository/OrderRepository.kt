@@ -14,6 +14,9 @@ interface OrderRepository {
     // 메뉴 옵션
     suspend fun getMenuDetail(menuId: Int): Result<MenuDetail>
 
+    // 주문 생성
+    suspend fun createOrder(paymentMethod: String): Result<List<CurrentOrderInfo>>
+
     // 장바구니 정보 조회
     suspend fun getShoppingCartInfo(): Result<List<CartStore>>
 

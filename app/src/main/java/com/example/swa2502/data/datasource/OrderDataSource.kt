@@ -8,6 +8,8 @@ import javax.inject.Inject
 import com.example.swa2502.data.dto.order.CurrentOrderResponseDto
 import com.example.swa2502.data.dto.order.CartStoreDto
 import com.example.swa2502.data.dto.order.CartItemUpdateDto
+import com.example.swa2502.data.dto.order.OrderRequestDto
+import com.example.swa2502.data.dto.order.OrderResponseDto
 
 class OrderDataSource @Inject constructor(
     private val api: OrderApi
@@ -34,6 +36,11 @@ class OrderDataSource @Inject constructor(
      */
     suspend fun fetchMenuDetail(menuId: Int): MenuDetailDto {
         return api.getMenuDetail(menuId)
+    }
+
+    // 주문 생성
+    suspend fun createOrder(request: OrderRequestDto): List<OrderResponseDto> {
+        return api.createOrder(request)
     }
 
     // 장바구니 정보 조회

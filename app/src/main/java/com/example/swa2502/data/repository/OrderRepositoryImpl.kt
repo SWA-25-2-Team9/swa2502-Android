@@ -12,6 +12,9 @@ import com.example.swa2502.domain.model.OptionItem
 import com.example.swa2502.domain.model.CartStore
 import com.example.swa2502.domain.model.CartMenu
 import com.example.swa2502.domain.model.CartOption
+import com.example.swa2502.data.dto.order.OrderRequestDto
+import com.example.swa2502.data.dto.order.OrderItemDto
+import com.example.swa2502.data.dto.order.OrderResponseDto
 import javax.inject.Inject
 
 class OrderRepositoryImpl @Inject constructor(
@@ -86,6 +89,38 @@ class OrderRepositoryImpl @Inject constructor(
                 }
             )
             Result.success(menuDetail)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // 주문 생성
+    override suspend fun createOrder(paymentMethod: String): Result<List<CurrentOrderInfo>> {
+        return try {
+            val request = OrderRequestDto(paymentMethod = paymentMethod)
+            val dtoList = remote.createOrder(request)
+
+            val domainList = dtoList.map { dto ->
+                CurrentOrderInfo(
+                    orderId = dto.orderId,
+                    orderNumber = "${dto.orderNumber}",
+                    shopName = dto.shopName,
+                    myTurn = dto.myTurn,
+                    etaMinutes = dto.etaMinutes,
+                    estimatedWaitTime = "약 ${dto.etaMinutes}분 예상",
+                    totalPrice = dto.totalPrice,
+                    orderedAt = dto.orderedAt,
+                    items = dto.items.map { itemDto ->
+                        OrderItem(
+                            menuName = itemDto.menuName,
+                            quantity = itemDto.quantity,
+                            price = itemDto.price,
+                            options = itemDto.options
+                        )
+                    }
+                )
+            }
+            Result.success(domainList)
         } catch (e: Exception) {
             Result.failure(e)
         }
