@@ -11,7 +11,6 @@ import com.example.swa2502.data.dto.order.CartAddRequestDto
 import com.example.swa2502.data.dto.order.CartAddResponseDto
 import com.example.swa2502.data.dto.order.ClearShoppingCartDto
 import com.example.swa2502.data.dto.order.DeleteCartItemResponseDto
-import kotlinx.serialization.SerialName
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.POST

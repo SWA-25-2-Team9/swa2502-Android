@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.swa2502.domain.model.OptionItem
 import com.example.swa2502.domain.model.OptionGroup
 import com.example.swa2502.domain.usecase.order.GetMenuDetailUseCase
+import com.example.swa2502.domain.usecase.order.AddCartUseCase
 import kotlinx.coroutines.launch
 import androidx.lifecycle.SavedStateHandle
 
@@ -25,12 +26,15 @@ data class MenuOptionUiState(
     val quantity: Int = 1, // 수량은 현재 1로 고정
     val totalAmount: Int = 0,
     val errorMessage: String? = null,
+    val isAddingToCart: Boolean = false, // 장바구니 추가 중 상태
+    val addToCartSuccess: Boolean = false, // 장바구니 추가 성공 여부
 )
 
 
 @HiltViewModel
 class MenuOptionViewModel @Inject constructor(
     private val getMenuDetailUseCase: GetMenuDetailUseCase,
+    private val addCartUseCase: AddCartUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MenuOptionUiState())
@@ -118,8 +122,39 @@ class MenuOptionViewModel @Inject constructor(
     }
 
     // 카트 담기 로직
-    fun onAddToCartClick() {
-        // TODO: 현재 선택된 옵션과 수량을 포함하여 카트 Repository에 추가하는 로직 구현
-        println("카트에 담기: ${_uiState.value.menuName}, 총 금액: ${_uiState.value.totalAmount}원")
+    fun onAddToCartClick(onSuccess: () -> Unit = {}) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isAddingToCart = true, errorMessage = null, addToCartSuccess = false) }
+
+            // 선택된 옵션 ID들을 추출 (필수 옵션만 선택되어 있을 수 있으므로 null이 아닌 것만)
+            val selectedOptions = _uiState.value.optionGroups
+                .mapNotNull { group -> group.selectedOptionId }
+                .map { it.toLong() } // Int를 Long으로 변환 (API가 Long을 요구)
+
+            addCartUseCase(
+                menuId = menuId,
+                quantity = _uiState.value.quantity,
+                selectedOptions = selectedOptions
+            )
+                .onSuccess { cartCount ->
+                    _uiState.update {
+                        it.copy(
+                            isAddingToCart = false,
+                            addToCartSuccess = true,
+                            errorMessage = null
+                        )
+                    }
+                    onSuccess()
+                }
+                .onFailure { error ->
+                    _uiState.update {
+                        it.copy(
+                            isAddingToCart = false,
+                            addToCartSuccess = false,
+                            errorMessage = error.message ?: "장바구니에 추가하는 데 실패했습니다."
+                        )
+                    }
+                }
+        }
     }
 }

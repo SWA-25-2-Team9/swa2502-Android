@@ -25,6 +25,7 @@ import java.text.NumberFormat
 import java.util.Locale
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.getValue
 
 @Composable
 fun PayScreen(
@@ -33,14 +34,21 @@ fun PayScreen(
     onPayClick: () -> Unit = {}
 ) {
     val viewModel: PayViewModel = hiltViewModel()
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // 주문 생성 성공 시 네비게이션 처리
+    LaunchedEffect(uiState.orderCreated) {
+        if (uiState.orderCreated) {
+            onPayClick()
+        }
+    }
 
     PayScreenContent(
         modifier = modifier,
-        uiState = uiState.value,
+        uiState = uiState,
         onBackClick = onBackClick,
         onPaymentSelected = viewModel::selectPaymentMethod,
-        onPayClick = onPayClick,
+        onPayClick = { viewModel.createOrder() },
     )
 }
 
@@ -172,14 +180,22 @@ fun PayScreenContent(
                 shape = RoundedCornerShape(0.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp)
+                    .height(56.dp),
+                enabled = !uiState.isLoading && uiState.totalPrice > 0
             ) {
-                Text(
-                    text = "${formattedPrice}원 결제하기",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = Color.White
+                    )
+                } else {
+                    Text(
+                        text = "${formattedPrice}원 결제하기",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
             }
         },
         modifier = modifier.background(Color(0xFFF5F5F5))
@@ -197,6 +213,17 @@ fun PayScreenContent(
             )
             Spacer(modifier = Modifier.height(32.dp))
             TotalPaymentRow(formattedPrice) // 로컬 함수 호출
+
+            // 에러 메시지 표시
+            if (uiState.errorMessage != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = uiState.errorMessage,
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
         }
     }
 }

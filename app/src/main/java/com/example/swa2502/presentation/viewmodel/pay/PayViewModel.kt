@@ -21,6 +21,7 @@ data class PayUiState(
     val errorMessage: String? = null,
     val totalPrice: Int = 0, // 총 결제 금액 (원)
     val selectedPaymentMethod: PaymentMethod = PaymentMethod.CARD, // 기본값: 신용/체크카드
+    val orderCreated: Boolean = false, // 주문 생성 성공 여부
 )
 
 @HiltViewModel
@@ -47,31 +48,30 @@ class PayViewModel @Inject constructor(
         }
     }
 
-    fun createOrder() {
+    fun createOrder(onSuccess: () -> Unit = {}) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            _uiState.update { it.copy(isLoading = true, errorMessage = null, orderCreated = false) }
 
-            val methodString = when (_uiState.value.selectedPaymentMethod) {
-                PaymentMethod.CARD -> "CARD"
-                PaymentMethod.SIMPLE -> "SIMPLE"
-            }
-
-            // 실제 결제 로직 대신 주문 생성 API 호출
-            createOrderUseCase(methodString)
+            // 실제 결제는 이루어지지 않으므로 paymentMethod는 고려하지 않고 빈 문자열 전달
+            // 주문 생성만 수행
+            createOrderUseCase("")
                 .onSuccess {
-                    // 결제 성공 및 주문 생성 완료
+                    // 주문 생성 완료
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-
+                            orderCreated = true,
+                            errorMessage = null
                         )
                     }
+                    onSuccess()
                 }
                 .onFailure { error ->
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            errorMessage = error.message ?: "결제 및 주문 생성에 실패했습니다."
+                            orderCreated = false,
+                            errorMessage = error.message ?: "주문 생성에 실패했습니다."
                         )
                     }
                 }
