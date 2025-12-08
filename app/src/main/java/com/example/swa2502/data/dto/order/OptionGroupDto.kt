@@ -5,12 +5,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class OptionGroupDto(
-    @SerialName("id")
-    val id: Int,
+    @SerialName("groupId")
+    val groupId: Int,
     @SerialName("name")
     val name: String,
-    @SerialName("isRequired")
-    val isRequired: Boolean, // API에서 필수 여부 제공 가정
+    @SerialName("required")
+    val required: Boolean,
     @SerialName("options")
     val options: List<OptionItemDto>
 )

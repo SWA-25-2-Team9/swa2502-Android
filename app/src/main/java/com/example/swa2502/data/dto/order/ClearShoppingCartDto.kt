@@ -3,8 +3,9 @@ package com.example.swa2502.data.dto.order
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+
 @Serializable
-data class CartItemUpdateDto(
-    @SerialName("quantity")
-    val quantity: Int
+data class ClearShoppingCartDto (
+    @SerialName("message")
+    val message: String
 )

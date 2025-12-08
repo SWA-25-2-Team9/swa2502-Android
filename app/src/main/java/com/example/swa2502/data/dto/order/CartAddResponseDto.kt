@@ -4,7 +4,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CartItemUpdateDto(
-    @SerialName("quantity")
-    val quantity: Int
+data class CartAddResponseDto(
+    @SerialName("cartItemId")
+    val cartItemId: Int,
+    @SerialName("cartCount")
+    val cartCount: Int
 )

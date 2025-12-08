@@ -4,18 +4,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ItemDto(
-    @SerialName("menuName")
-    val menuName: String,
-    @SerialName("quantity")
-    val quantity: Int,
-    @SerialName("price")
-    val price: Int,
-    @SerialName("options")
-    val options: List<String>
-)
-
-@Serializable
 data class CurrentOrderResponseDto(
     @SerialName("orderId")
     val orderId: Int,
@@ -33,4 +21,16 @@ data class CurrentOrderResponseDto(
     val orderedAt: String,
     @SerialName("items")
     val items: List<ItemDto>
+)
+
+@Serializable
+data class ItemDto(
+    @SerialName("menuName")
+    val menuName: String,
+    @SerialName("quantity")
+    val quantity: Int,
+    @SerialName("price")
+    val price: Int,
+    @SerialName("options")
+    val options: List<String>
 )

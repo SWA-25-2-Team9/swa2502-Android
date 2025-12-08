@@ -1,41 +1,37 @@
 package com.example.swa2502.data.dto.order
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-data class OrderRequestDto(
-    @SerializedName("paymentMethod")
-    val paymentMethod: String // "CARD", "SIMPLE"
-)
 
+@Serializable
 data class OrderResponseDto(
-    @SerializedName("orderId")
+    @SerialName("orderId")
     val orderId: Int,
-    @SerializedName("orderNumber")
+    @SerialName("orderNumber")
     val orderNumber: Int,
-    @SerializedName("shopName")
+    @SerialName("shopName")
     val shopName: String,
-    @SerializedName("myTurn")
+    @SerialName("myTurn")
     val myTurn: Int,
-    @SerializedName("etaMinutes")
+    @SerialName("etaMinutes")
     val etaMinutes: Int,
-    @SerializedName("totalPrice")
+    @SerialName("totalPrice")
     val totalPrice: Int,
-    @SerializedName("orderedAt")
+    @SerialName("orderedAt")
     val orderedAt: String,
-    @SerializedName("items")
+    @SerialName("items")
     val items: List<OrderItemDto>
 )
 
+@Serializable
 data class OrderItemDto(
-    @SerializedName("menuName")
+    @SerialName("menuName")
     val menuName: String,
-    @SerializedName("quantity")
+    @SerialName("quantity")
     val quantity: Int,
-    @SerializedName("price")
+    @SerialName("price")
     val price: Int,
-    @SerializedName("options")
+    @SerialName("options")
     val options: List<String>
 )
-
-class OrderDto {
-}
