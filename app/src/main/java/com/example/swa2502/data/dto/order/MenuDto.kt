@@ -16,3 +16,4 @@ data class MenuDto(
     @SerialName("isSoldOut")
     val isSoldOut: Boolean
 )
+//사용
