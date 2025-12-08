@@ -9,6 +9,6 @@ data class OptionItemDto(
     val id: Int,
     @SerialName("name")
     val name: String,
-    @SerialName("price")
-    val price: Int // 추가 가격 (0원 이상)
+    @SerialName("extraPrice")
+    val extraPrice: Int
 )

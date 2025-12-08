@@ -86,6 +86,4 @@ dependencies {
     ksp(libs.hilt.manager)
     // Datastore
     implementation(libs.androidx.datastore.preferences)
-    //Gson
-    implementation("com.google.code.gson:gson:2.13.2")
 }

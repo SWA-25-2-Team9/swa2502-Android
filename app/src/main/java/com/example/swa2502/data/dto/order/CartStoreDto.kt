@@ -1,22 +1,28 @@
 package com.example.swa2502.data.dto.order
 
-// API 응답 구조: List<CartStoreDto>
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class CartStoreDto(
+    @SerialName("storeId")
     val storeId: Int,
-    val storeName: String,
-    val cartMenus: List<CartMenuDto>,
+    @SerialName("totalPrice")
+    val totalPrice: Int,
+    @SerialName("items")
+    val items: List<CartMenuDto>,
 )
 
+@Serializable
 data class CartMenuDto(
-    val menuId: Int, // 장바구니 항목 ID (API DELETE/PATCH Path에 사용되는 ID라고 가정)
+    @SerialName("cartItemId")
+    val cartItemId: Int,
+    @SerialName("menuName")
     val menuName: String,
+    @SerialName("quantity")
     val quantity: Int,
-    val options: List<CartOptionDto>,
-    val totalPrice: Int, // 이 메뉴와 옵션, 수량의 총 가격
-    val storeId: Int,
-)
-
-data class CartOptionDto(
-    val name: String,
-    val price: Int, // 옵션 가격을 포함하여 매핑에 유용하도록 추가
+    @SerialName("optionsText")
+    val optionsText: String,
+    @SerialName("price")
+    val price: Int,
 )
