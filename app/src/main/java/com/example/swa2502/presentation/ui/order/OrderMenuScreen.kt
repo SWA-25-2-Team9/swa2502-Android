@@ -44,7 +44,7 @@ fun OrderMenuScreen(
             viewModel.onMenuItemClick(menuItem)
             onNavigateToMenuOption(menuItem)
         },
-        onCheckoutClick = { /* TODO: 결제 화면으로 이동 로직 */ }
+        onCheckoutClick = onCartClick // 장바구니 화면으로 이동
     )
 
     // TODO: 에러 메시지 표시 Snackbar 로직 추가

@@ -5,9 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,17 +19,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.swa2502.presentation.viewmodel.order.MenuOptionUiState
 import com.example.swa2502.presentation.viewmodel.order.MenuOptionViewModel
-import com.example.swa2502.domain.model.OptionGroup // Domain 모델 임포트
-import com.example.swa2502.domain.model.OptionItem // Domain 모델 임포트
+import com.example.swa2502.domain.model.OptionGroup
+import com.example.swa2502.domain.model.OptionItem
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import com.example.swa2502.R
-import com.example.swa2502.domain.model.MenuItem // MenuItem import
-import com.example.swa2502.presentation.ui.order.component.DividerGray
 import com.example.swa2502.presentation.ui.order.component.OptionGroupItem
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.draw.clip
 
 // ----------------------------------------------------
 // 1. 메인 화면 Composable
@@ -239,16 +233,6 @@ private fun MenuOptionScreenContent(
                             )
                         }
                     }
-
-                    // 에러 메시지 표시
-//                    if (uiState.errorMessage != null) {
-//                        Spacer(modifier = Modifier.height(8.dp))
-//                        Text(
-//                            text = uiState.errorMessage,
-//                            color = Color.Red,
-//                            fontSize = 12.sp
-//                        )
-//                    }
                 }
             }
         }

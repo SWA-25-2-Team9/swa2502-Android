@@ -48,7 +48,6 @@ fun ShoppingCartScreen(
         uiState = uiState.value,
         onBackClick = onBackClick,
         onCheckoutClick = onCheckoutClick,
-        // ✅ cartItemId 사용
         onQuantityChange = { cartItemId, newQuantity -> viewModel.onQuantityChange(cartItemId, newQuantity) },
         onDeleteMenu = viewModel::onDeleteMenu,
         onDeleteStore = viewModel::onDeleteStore,
@@ -64,7 +63,6 @@ fun ShoppingCartScreenContent(
     uiState: ShoppingCartUiState,
     onBackClick: () -> Unit,
     onCheckoutClick: () -> Unit,
-    // ✅ ID 타입을 Int로 변경
     onQuantityChange: (Int, Int) -> Unit,
     onDeleteMenu: (Int) -> Unit,
     onDeleteStore: (Int) -> Unit,
@@ -143,7 +141,6 @@ fun ShoppingCartScreenContent(
                 contentPadding = PaddingValues(vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // ✅ cartStore는 Presentation Model을 사용
                 items(uiState.cartStores, key = { it.storeId }) { cartStore ->
                     CartStoreItem(
                         cartStore = cartStore,
@@ -162,8 +159,7 @@ fun ShoppingCartScreenContent(
 // ----------------------------------------------------
 @Composable
 fun CartStoreItem(
-    cartStore: CartStore, // ✅ Presentation Model 사용
-    // ✅ ID 타입을 Int로 변경
+    cartStore: CartStore,
     onQuantityChange: (Int, Int) -> Unit,
     onDeleteMenu: (Int) -> Unit,
     onDeleteStore: (Int) -> Unit,
@@ -186,9 +182,9 @@ fun CartStoreItem(
                 // 상점 선택/이름
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Filled.Close, // 임시 플레이스홀더로 Close 사용
+                        imageVector = Icons.Filled.Close,
                         contentDescription = "선택 표시",
-                        tint = Color(0xFFFF9800), // 오렌지색
+                        tint = Color(0xFFFF9800),
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -202,7 +198,7 @@ fun CartStoreItem(
                 }
 
                 // 가게 메뉴 전체 삭제 버튼
-                IconButton(onClick = { onDeleteStore(cartStore.storeId) }) { // ✅ Int ID 사용
+                IconButton(onClick = { onDeleteStore(cartStore.storeId) }) {
                     Icon(
                         Icons.Filled.Close,
                         contentDescription = "가게 메뉴 전체 삭제",
@@ -238,8 +234,7 @@ fun CartStoreItem(
 // ----------------------------------------------------
 @Composable
 fun CartMenuItem(
-    cartMenu: CartMenu, // ✅ Presentation Model 사용
-    // ✅ ID 타입을 Int로 변경
+    cartMenu: CartMenu,
     onQuantityChange: (Int, Int) -> Unit,
     onDeleteMenu: (Int) -> Unit,
 ) {
@@ -270,7 +265,7 @@ fun CartMenuItem(
 
             // 메뉴 삭제 버튼
             IconButton(
-                onClick = { onDeleteMenu(cartMenu.cartItemId) }, // ✅ cartItemId 사용
+                onClick = { onDeleteMenu(cartMenu.cartItemId) },
                 modifier = Modifier.size(24.dp)
             ) {
                 Icon(
@@ -297,7 +292,7 @@ fun CartMenuItem(
             ) {
                 // 감소 버튼
                 IconButton(
-                    onClick = { if (cartMenu.quantity > 1) onQuantityChange(cartMenu.cartItemId, cartMenu.quantity - 1) }, // ✅ cartItemId 사용
+                    onClick = { if (cartMenu.quantity > 1) onQuantityChange(cartMenu.cartItemId, cartMenu.quantity - 1) },
                     enabled = cartMenu.quantity > 1
                 ) {
                     Text(text = "–", fontSize = 16.sp, color = Color.Black)
@@ -313,7 +308,7 @@ fun CartMenuItem(
                 Spacer(modifier = Modifier.width(8.dp))
                 // 증가 버튼
                 IconButton(
-                    onClick = { onQuantityChange(cartMenu.cartItemId, cartMenu.quantity + 1) } // ✅ cartItemId 사용
+                    onClick = { onQuantityChange(cartMenu.cartItemId, cartMenu.quantity + 1) }
                 ) {
                     Text(text = "+", fontSize = 16.sp, color = Color.Black)
                 }
@@ -341,19 +336,19 @@ private fun ShoppingCartScreenContentPreview() {
         totalAmount = 26500,
         cartStores = listOf(
             CartStore(
-                storeId = 1, // ✅ Int ID
+                storeId = 1,
                 storeName = "커피하우스 1호점",
                 cartMenus = listOf(
-                    CartMenu(cartItemId = 1, menuId = 101, "아메리카노", 1, listOf(CartOption("ICE (+500원)")), 5000, 1), // ✅ cartItemId 추가
-                    CartMenu(cartItemId = 2, menuId = 102, "카페라떼", 2, listOf(CartOption("HOT"), CartOption("샷 추가 (+500원)")), 11000, 1), // ✅ cartItemId 추가
+                    CartMenu(cartItemId = 1, menuId = 101, "아메리카노", 1, listOf(CartOption("ICE (+500원)")), 5000, 1),
+                    CartMenu(cartItemId = 2, menuId = 102, "카페라떼", 2, listOf(CartOption("HOT"), CartOption("샷 추가 (+500원)")), 11000, 1),
                 )
             ),
             CartStore(
-                storeId = 2, // ✅ Int ID
+                storeId = 2,
                 storeName = "프리미엄 베이커리",
                 cartMenus = listOf(
-                    CartMenu(cartItemId = 3, menuId = 201, "크루아상", 2, emptyList(), 6000, 2), // ✅ cartItemId 추가
-                    CartMenu(cartItemId = 4, menuId = 202, "딸기 생크림 케이크", 1, listOf(CartOption("포장 박스 추가 (+500원)")), 4500, 2), // ✅ cartItemId 추가
+                    CartMenu(cartItemId = 3, menuId = 201, "크루아상", 2, emptyList(), 6000, 2),
+                    CartMenu(cartItemId = 4, menuId = 202, "딸기 생크림 케이크", 1, listOf(CartOption("포장 박스 추가 (+500원)")), 4500, 2),
                 )
             ),
         ),

@@ -68,7 +68,7 @@ fun MyOrderScreenContent(
                     Box(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             modifier = Modifier.align(Alignment.Center),
-                            text = "식당 혼잡도",
+                            text = "내 주문",
                             style = TextStyle(
                                 color = Color.Black,
                                 fontSize = 18.sp,
