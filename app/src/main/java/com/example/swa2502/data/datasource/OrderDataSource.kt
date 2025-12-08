@@ -10,6 +10,10 @@ import com.example.swa2502.data.dto.order.CartStoreDto
 import com.example.swa2502.data.dto.order.CartItemUpdateDto
 import com.example.swa2502.data.dto.order.OrderRequestDto
 import com.example.swa2502.data.dto.order.OrderResponseDto
+import com.example.swa2502.data.dto.order.CartAddRequestDto
+import com.example.swa2502.data.dto.order.CartAddResponseDto
+import com.example.swa2502.data.dto.order.DeleteCartItemResponseDto
+import com.example.swa2502.data.dto.order.ClearShoppingCartDto
 
 class OrderDataSource @Inject constructor(
     private val api: OrderApi
@@ -48,20 +52,23 @@ class OrderDataSource @Inject constructor(
         return api.getShoppingCartInfo()
     }
 
+    // 장바구니 추가
+    suspend fun addCart(request: CartAddRequestDto): CartAddResponseDto {
+        return api.addCart(request)
+    }
+
     // 장바구니 수량 변경
     suspend fun updateCartItemQuantity(cartItemId: Int, quantity: Int) {
-        return api.updateCartItemQuantity(cartItemId, CartItemUpdateDto(quantity))
+        api.updateCartItemQuantity(cartItemId, CartItemUpdateDto(quantity))
     }
 
     // 장바구니 항목 삭제
-    suspend fun deleteCartItem(cartItemId: Int): Int {
-        val response = api.deleteCartItem(cartItemId)
-        return response["cartCount"] ?: 0
+    suspend fun deleteCartItem(cartItemId: Int): DeleteCartItemResponseDto {
+        return api.deleteCartItem(cartItemId)
     }
 
     // 장바구니 전체 비우기
-    suspend fun clearShoppingCart(): String {
-        val response = api.clearShoppingCart()
-        return response["message"] ?: "failed"
+    suspend fun clearShoppingCart(): ClearShoppingCartDto {
+        return api.clearShoppingCart()
     }
 }

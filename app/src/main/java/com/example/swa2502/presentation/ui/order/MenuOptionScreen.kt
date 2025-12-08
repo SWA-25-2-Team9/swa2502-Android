@@ -1,4 +1,3 @@
-// 📂 presentation/ui/order/MenuOptionScreen.kt (수정)
 package com.example.swa2502.presentation.ui.order
 
 import androidx.compose.foundation.background
@@ -32,6 +31,8 @@ import com.example.swa2502.R
 import com.example.swa2502.domain.model.MenuItem // MenuItem import
 import com.example.swa2502.presentation.ui.order.component.DividerGray
 import com.example.swa2502.presentation.ui.order.component.OptionGroupItem
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.draw.clip
 
 // ----------------------------------------------------
 // 1. 메인 화면 Composable
@@ -46,13 +47,22 @@ fun MenuOptionScreen(
     val viewModel: MenuOptionViewModel = hiltViewModel()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
+    // 장바구니 추가 성공 시 네비게이션 처리
+    LaunchedEffect(uiState.addToCartSuccess) {
+        if (uiState.addToCartSuccess) {
+            onAddToCartClick()
+        }
+    }
+
     MenuOptionScreenContent(
         modifier = modifier,
         uiState = uiState,
         onBackClick = onBackClick,
         onOptionSelected = viewModel::onOptionSelected,
-        onCartClick = onBackClick,
-//        onAddToCartClick = onAddToCartClick
+        onQuantityIncrease = viewModel::onQuantityIncrease,
+        onQuantityDecrease = viewModel::onQuantityDecrease,
+        onAddToCartClick = { viewModel.onAddToCartClick() },
+        onCartClick = onCartClick,
     )
 }
 
@@ -66,8 +76,10 @@ private fun MenuOptionScreenContent(
     uiState: MenuOptionUiState,
     onBackClick: () -> Unit,
     onOptionSelected: (groupId: Int, optionId: Int) -> Unit,
+    onQuantityIncrease: () -> Unit,
+    onQuantityDecrease: () -> Unit,
+    onAddToCartClick: () -> Unit,
     onCartClick: () -> Unit,
-//    onAddToCartClick: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -133,21 +145,111 @@ private fun MenuOptionScreenContent(
                 Text("오류: ${uiState.errorMessage}", color = Color.Red)
             }
         } else {
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues),
-                contentPadding = PaddingValues(bottom = 16.dp)
+                    .padding(paddingValues)
             ) {
-                // 옵션 그룹
-                items(uiState.optionGroups) { group ->
-                    OptionGroupItem(
-                        optionGroup = group,
-                        onOptionSelected = onOptionSelected
-                    )
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(bottom = 16.dp)
+                ) {
+                    // 옵션 그룹
+                    items(uiState.optionGroups) { group ->
+                        OptionGroupItem(
+                            optionGroup = group,
+                            onOptionSelected = onOptionSelected
+                        )
+                    }
                 }
 
+                // 하단 수량 조절 및 장바구니 담기 버튼
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(16.dp)
+                ) {
+                    // 수량 조절 및 총 금액
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // 수량 조절
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(Color(0xFFEEEEEE))
+                        ) {
+                            IconButton(
+                                onClick = onQuantityDecrease,
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Text("-", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                            }
+                            Text(
+                                text = "${uiState.quantity}",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                            IconButton(
+                                onClick = onQuantityIncrease,
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Text("+", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
 
+                        // 총 금액
+                        Text(
+                            text = "${String.format("%,d", uiState.totalAmount)}원",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFFF5722)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // 장바구니 담기 버튼
+                    Button(
+                        onClick = onAddToCartClick,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFFF9800)
+                        ),
+                        enabled = !uiState.isAddingToCart && uiState.totalAmount > 0
+                    ) {
+                        if (uiState.isAddingToCart) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = Color.White
+                            )
+                        } else {
+                            Text(
+                                text = "장바구니 담기",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+                    }
+
+                    // 에러 메시지 표시
+//                    if (uiState.errorMessage != null) {
+//                        Spacer(modifier = Modifier.height(8.dp))
+//                        Text(
+//                            text = uiState.errorMessage,
+//                            color = Color.Red,
+//                            fontSize = 12.sp
+//                        )
+//                    }
+                }
             }
         }
     }
@@ -214,6 +316,9 @@ private fun MenuOptionScreenContentPreview() {
         uiState = previewUiState,
         onBackClick = {},
         onCartClick = {},
-        onOptionSelected = { _, _->}
+        onOptionSelected = { _, _->},
+        onQuantityIncrease = {},
+        onQuantityDecrease = {},
+        onAddToCartClick = {}
     )
 }

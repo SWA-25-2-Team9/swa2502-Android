@@ -21,6 +21,7 @@ import com.example.swa2502.domain.model.CartStore as DomainCartStore // ✅ Doma
 // ----------------------------------------------------
 data class CartOption(val name: String)
 data class CartMenu(
+    val cartItemId: Int, // 장바구니 항목 ID (수량 변경, 삭제 시 사용)
     val menuId: Int, // ⚠️ Long -> Int 수정
     val menuName: String,
     val quantity: Int,
@@ -74,6 +75,7 @@ class ShoppingCartViewModel @Inject constructor(
                             storeName = domainStore.storeName,
                             cartMenus = domainStore.cartMenus.map { domainMenu ->
                                 CartMenu(
+                                    cartItemId = domainMenu.cartItemId,
                                     menuId = domainMenu.menuId,
                                     menuName = domainMenu.menuName,
                                     quantity = domainMenu.quantity,
@@ -110,12 +112,12 @@ class ShoppingCartViewModel @Inject constructor(
         }
     }
 
-    // ✅ 카트 수량 증가/감소 (ID 타입을 Int로 통일)
-    fun onQuantityChange(menuId: Int, newQuantity: Int) {
+    // ✅ 카트 수량 증가/감소 (cartItemId 사용)
+    fun onQuantityChange(cartItemId: Int, newQuantity: Int) {
         if (newQuantity <= 0) return
 
         viewModelScope.launch {
-            updateCartItemQuantityUseCase(menuId, newQuantity)
+            updateCartItemQuantityUseCase(cartItemId, newQuantity)
                 .onSuccess { loadShoppingCartInfo() }
                 .onFailure { error ->
                     _uiState.update { it.copy(errorMessage = error.message ?: "수량 변경에 실패했습니다.") }
@@ -124,10 +126,10 @@ class ShoppingCartViewModel @Inject constructor(
         }
     }
 
-    // ✅ 메뉴 삭제 (ID 타입을 Int로 통일)
-    fun onDeleteMenu(menuId: Int) {
+    // ✅ 메뉴 삭제 (cartItemId 사용)
+    fun onDeleteMenu(cartItemId: Int) {
         viewModelScope.launch {
-            deleteCartItemUseCase(menuId)
+            deleteCartItemUseCase(cartItemId)
                 .onSuccess { loadShoppingCartInfo() }
                 .onFailure { error ->
                     _uiState.update { it.copy(errorMessage = error.message ?: "메뉴 삭제에 실패했습니다.") }

@@ -48,8 +48,8 @@ fun ShoppingCartScreen(
         uiState = uiState.value,
         onBackClick = onBackClick,
         onCheckoutClick = onCheckoutClick,
-        // ✅ ID 타입을 Int로 변경
-        onQuantityChange = { menuId, newQuantity -> viewModel.onQuantityChange(menuId, newQuantity) },
+        // ✅ cartItemId 사용
+        onQuantityChange = { cartItemId, newQuantity -> viewModel.onQuantityChange(cartItemId, newQuantity) },
         onDeleteMenu = viewModel::onDeleteMenu,
         onDeleteStore = viewModel::onDeleteStore,
     )
@@ -270,7 +270,7 @@ fun CartMenuItem(
 
             // 메뉴 삭제 버튼
             IconButton(
-                onClick = { onDeleteMenu(cartMenu.menuId) }, // ✅ Int ID 사용
+                onClick = { onDeleteMenu(cartMenu.cartItemId) }, // ✅ cartItemId 사용
                 modifier = Modifier.size(24.dp)
             ) {
                 Icon(
@@ -297,7 +297,7 @@ fun CartMenuItem(
             ) {
                 // 감소 버튼
                 IconButton(
-                    onClick = { if (cartMenu.quantity > 1) onQuantityChange(cartMenu.menuId, cartMenu.quantity - 1) }, // ✅ Int ID 사용
+                    onClick = { if (cartMenu.quantity > 1) onQuantityChange(cartMenu.cartItemId, cartMenu.quantity - 1) }, // ✅ cartItemId 사용
                     enabled = cartMenu.quantity > 1
                 ) {
                     Text(text = "–", fontSize = 16.sp, color = Color.Black)
@@ -313,7 +313,7 @@ fun CartMenuItem(
                 Spacer(modifier = Modifier.width(8.dp))
                 // 증가 버튼
                 IconButton(
-                    onClick = { onQuantityChange(cartMenu.menuId, cartMenu.quantity + 1) } // ✅ Int ID 사용
+                    onClick = { onQuantityChange(cartMenu.cartItemId, cartMenu.quantity + 1) } // ✅ cartItemId 사용
                 ) {
                     Text(text = "+", fontSize = 16.sp, color = Color.Black)
                 }
@@ -344,16 +344,16 @@ private fun ShoppingCartScreenContentPreview() {
                 storeId = 1, // ✅ Int ID
                 storeName = "커피하우스 1호점",
                 cartMenus = listOf(
-                    CartMenu(101, "아메리카노", 1, listOf(CartOption("ICE (+500원)")), 5000, 1), // ✅ Int ID
-                    CartMenu(102, "카페라떼", 2, listOf(CartOption("HOT"), CartOption("샷 추가 (+500원)")), 11000, 1), // ✅ Int ID
+                    CartMenu(cartItemId = 1, menuId = 101, "아메리카노", 1, listOf(CartOption("ICE (+500원)")), 5000, 1), // ✅ cartItemId 추가
+                    CartMenu(cartItemId = 2, menuId = 102, "카페라떼", 2, listOf(CartOption("HOT"), CartOption("샷 추가 (+500원)")), 11000, 1), // ✅ cartItemId 추가
                 )
             ),
             CartStore(
                 storeId = 2, // ✅ Int ID
                 storeName = "프리미엄 베이커리",
                 cartMenus = listOf(
-                    CartMenu(201, "크루아상", 2, emptyList(), 6000, 2), // ✅ Int ID
-                    CartMenu(202, "딸기 생크림 케이크", 1, listOf(CartOption("포장 박스 추가 (+500원)")), 4500, 2), // ✅ Int ID
+                    CartMenu(cartItemId = 3, menuId = 201, "크루아상", 2, emptyList(), 6000, 2), // ✅ cartItemId 추가
+                    CartMenu(cartItemId = 4, menuId = 202, "딸기 생크림 케이크", 1, listOf(CartOption("포장 박스 추가 (+500원)")), 4500, 2), // ✅ cartItemId 추가
                 )
             ),
         ),

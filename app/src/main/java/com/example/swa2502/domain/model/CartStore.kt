@@ -9,6 +9,7 @@ data class CartStore(
 
 // 장바구니 메뉴 항목
 data class CartMenu(
+    val cartItemId: Int, // 장바구니 항목 ID (수량 변경, 삭제 시 사용)
     val menuId: Int,
     val menuName: String,
     val quantity: Int,

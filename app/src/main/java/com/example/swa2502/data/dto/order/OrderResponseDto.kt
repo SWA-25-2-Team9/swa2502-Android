@@ -9,8 +9,16 @@ data class OrderResponseDto (
     val orderId: Int,
     @SerialName("orderNumber")
     val orderNumber: Int,
+    @SerialName("shopName")
+    val shopName: String,
     @SerialName("myTurn")
     val myTurn: Int,
     @SerialName("etaMinutes")
-    val etaMinutes: Int
+    val etaMinutes: Int,
+    @SerialName("totalPrice")
+    val totalPrice: Int,
+    @SerialName("orderedAt")
+    val orderedAt: String,
+    @SerialName("items")
+    val items: List<ItemDto>
 )

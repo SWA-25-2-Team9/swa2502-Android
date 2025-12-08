@@ -13,8 +13,12 @@ import com.example.swa2502.domain.model.CartStore
 import com.example.swa2502.domain.model.CartMenu
 import com.example.swa2502.domain.model.CartOption
 import com.example.swa2502.data.dto.order.OrderRequestDto
-import com.example.swa2502.data.dto.order.OrderItemDto
 import com.example.swa2502.data.dto.order.OrderResponseDto
+import com.example.swa2502.data.dto.order.ItemDto
+import com.example.swa2502.data.dto.order.CartAddRequestDto
+import com.example.swa2502.data.dto.order.CartAddResponseDto
+import com.example.swa2502.data.dto.order.DeleteCartItemResponseDto
+import com.example.swa2502.data.dto.order.ClearShoppingCartDto
 import javax.inject.Inject
 
 class OrderRepositoryImpl @Inject constructor(
@@ -73,14 +77,14 @@ class OrderRepositoryImpl @Inject constructor(
                 basePrice = dto.price,
                 optionGroups = dto.optionGroups.map { groupDto ->
                     OptionGroup(
-                        id = groupDto.id,
+                        id = groupDto.groupId,
                         name = groupDto.name,
-                        isRequired = groupDto.isRequired,
+                        isRequired = groupDto.required,
                         options = groupDto.options.map { itemDto ->
                             OptionItem(
                                 id = itemDto.id,
                                 name = itemDto.name,
-                                price = itemDto.price
+                                price = itemDto.extraPrice
                             )
                         },
                         // **기본 선택 로직**: 필수 옵션 그룹이거나 선택 옵션 그룹일 경우 첫 번째 옵션을 선택
@@ -97,7 +101,7 @@ class OrderRepositoryImpl @Inject constructor(
     // 주문 생성
     override suspend fun createOrder(paymentMethod: String): Result<List<CurrentOrderInfo>> {
         return try {
-            val request = OrderRequestDto(paymentMethod = paymentMethod)
+            val request = OrderRequestDto(request = paymentMethod)
             val dtoList = remote.createOrder(request)
 
             val domainList = dtoList.map { dto ->
@@ -135,21 +139,37 @@ class OrderRepositoryImpl @Inject constructor(
                 CartStore(
                     storeId = dto.storeId,
                     storeName = dto.storeName,
-                    cartMenus = dto.cartMenus.map { menuDto ->
+                    cartMenus = dto.items.map { menuDto ->
                         CartMenu(
+                            cartItemId = menuDto.cartItemId,
                             menuId = menuDto.menuId,
                             menuName = menuDto.menuName,
                             quantity = menuDto.quantity,
-                            options = menuDto.options.map { optionDto ->
-                                CartOption(name = optionDto.name)
+                            options = menuDto.optionsText.split(", ").map { optionText ->
+                                CartOption(name = optionText.trim())
                             },
-                            totalPrice = menuDto.totalPrice,
-                            storeId = menuDto.storeId
+                            totalPrice = menuDto.price,
+                            storeId = dto.storeId
                         )
                     }
                 )
             }
             Result.success(domainList)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // 장바구니 추가
+    override suspend fun addCart(menuId: Int, quantity: Int, selectedOptions: List<Long>): Result<Int> {
+        return try {
+            val request = CartAddRequestDto(
+                menuId = menuId,
+                quantity = quantity,
+                selectedOptions = selectedOptions
+            )
+            val response = remote.addCart(request)
+            Result.success(response.cartCount)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -165,16 +185,21 @@ class OrderRepositoryImpl @Inject constructor(
 
     // 장바구니 항목 삭제 (메뉴 삭제)
     override suspend fun deleteCartItem(cartItemId: Int): Result<Int> {
-        return runCatching {
-            remote.deleteCartItem(cartItemId)
+        return try {
+            val response = remote.deleteCartItem(cartItemId)
+            Result.success(response.cartCount)
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 
     // 장바구니 전체 비우기 (가게 전체 삭제 대신 사용)
     override suspend fun clearShoppingCart(): Result<Unit> {
-        return runCatching {
+        return try {
             remote.clearShoppingCart()
-            Unit
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 }

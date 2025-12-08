@@ -20,11 +20,14 @@ interface OrderRepository {
     // 장바구니 정보 조회
     suspend fun getShoppingCartInfo(): Result<List<CartStore>>
 
+    // 장바구니 추가
+    suspend fun addCart(menuId: Int, quantity: Int, selectedOptions: List<Long>): Result<Int> // cartCount 반환
+
     // 장바구니 항목 수량 변경
     suspend fun updateCartItemQuantity(cartItemId: Int, quantity: Int): Result<Unit>
 
     // 장바구니 항목 삭제
-    suspend fun deleteCartItem(cartItemId: Int): Result<Int> // 남은 카트 항목 수 반환
+    suspend fun deleteCartItem(cartItemId: Int): Result<Int>
 
     // 장바구니 전체 비우기
     suspend fun clearShoppingCart(): Result<Unit>
