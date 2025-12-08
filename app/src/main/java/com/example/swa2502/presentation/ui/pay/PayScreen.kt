@@ -189,12 +189,12 @@ fun PayScreenContent(
                         color = Color.White
                     )
                 } else {
-                    Text(
-                        text = "${formattedPrice}원 결제하기",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
+                Text(
+                    text = "${formattedPrice}원 결제하기",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
                 }
             }
         },

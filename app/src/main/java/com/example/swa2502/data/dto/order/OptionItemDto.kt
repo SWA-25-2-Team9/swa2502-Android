@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 //사용
 @Serializable
 data class OptionItemDto(
-    @SerialName("id")
+    @SerialName("optionId")
     val id: Int,
     @SerialName("name")
     val name: String,

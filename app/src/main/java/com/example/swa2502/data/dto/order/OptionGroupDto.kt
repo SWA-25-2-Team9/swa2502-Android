@@ -11,6 +11,10 @@ data class OptionGroupDto(
     val name: String,
     @SerialName("required")
     val required: Boolean,
+    @SerialName("min")
+    val min: Int,
+    @SerialName("max")
+    val max: Int,
     @SerialName("options")
     val options: List<OptionItemDto>
 )

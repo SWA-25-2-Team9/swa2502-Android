@@ -15,39 +15,32 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import com.example.swa2502.domain.model.CartStore as DomainCartStore // ✅ Domain 모델은 매핑에 사용하기 위해 별칭 임포트
 
-// ----------------------------------------------------
-// 1. Presentation Layer 데이터 모델 정의 (Int ID 통일)
-// 이 모델이 UI(ShoppingCartScreen)에서 사용됩니다.
-// ----------------------------------------------------
+
 data class CartOption(val name: String)
 data class CartMenu(
-    val cartItemId: Int, // 장바구니 항목 ID (수량 변경, 삭제 시 사용)
-    val menuId: Int, // ⚠️ Long -> Int 수정
+    val cartItemId: Int,
+    val menuId: Int,
     val menuName: String,
     val quantity: Int,
     val options: List<CartOption>,
     val totalPrice: Int,
-    val storeId: Int, // ⚠️ Long -> Int 수정
+    val storeId: Int,
 )
 data class CartStore(
-    val storeId: Int, // ⚠️ Long -> Int 수정
+    val storeId: Int,
     val storeName: String,
     val cartMenus: List<CartMenu>,
 )
 
-// ----------------------------------------------------
-// 2. UI 상태 정의
-// ----------------------------------------------------
+// ui 상태 정의
 data class ShoppingCartUiState(
     val isLoading: Boolean = false,
     val totalAmount: Int = 0,
-    val cartStores: List<CartStore> = emptyList(), // ✅ Presentation Model 사용
+    val cartStores: List<CartStore> = emptyList(),
     val errorMessage: String? = null,
 )
 
-// ----------------------------------------------------
-// 3. ViewModel 구현
-// ----------------------------------------------------
+// view model 구현
 @HiltViewModel
 class ShoppingCartViewModel @Inject constructor(
     private val getShoppingCartInfoUseCase: GetShoppingCartInfoUseCase,
@@ -68,7 +61,7 @@ class ShoppingCartViewModel @Inject constructor(
 
             getShoppingCartInfoUseCase()
                 .onSuccess { domainCartStores ->
-                    // ✅ Domain Model -> Presentation Model 매핑
+                    // Domain Model -> Presentation Model 매핑
                     val presentationCartStores = domainCartStores.map { domainStore ->
                         CartStore(
                             storeId = domainStore.storeId,
@@ -112,7 +105,7 @@ class ShoppingCartViewModel @Inject constructor(
         }
     }
 
-    // ✅ 카트 수량 증가/감소 (cartItemId 사용)
+    // 카트 수량 증가/감소
     fun onQuantityChange(cartItemId: Int, newQuantity: Int) {
         if (newQuantity <= 0) return
 
@@ -126,7 +119,7 @@ class ShoppingCartViewModel @Inject constructor(
         }
     }
 
-    // ✅ 메뉴 삭제 (cartItemId 사용)
+    // 메뉴 삭제
     fun onDeleteMenu(cartItemId: Int) {
         viewModelScope.launch {
             deleteCartItemUseCase(cartItemId)
@@ -138,7 +131,7 @@ class ShoppingCartViewModel @Inject constructor(
         }
     }
 
-    // ✅ 가게 메뉴 전체 삭제 (장바구니 전체 비우기로 대체, ID 타입을 Int로 통일)
+    // 가게 메뉴 전체 삭제
     fun onDeleteStore(storeId: Int) {
         viewModelScope.launch {
             clearShoppingCartUseCase()

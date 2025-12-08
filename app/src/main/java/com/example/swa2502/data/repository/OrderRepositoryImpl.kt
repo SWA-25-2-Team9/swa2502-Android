@@ -87,7 +87,6 @@ class OrderRepositoryImpl @Inject constructor(
                                 price = itemDto.extraPrice
                             )
                         },
-                        // **기본 선택 로직**: 필수 옵션 그룹이거나 선택 옵션 그룹일 경우 첫 번째 옵션을 선택
                         selectedOptionId = if (groupDto.options.isNotEmpty()) groupDto.options.first().id else null
                     )
                 }
@@ -104,24 +103,19 @@ class OrderRepositoryImpl @Inject constructor(
             val request = OrderRequestDto(request = paymentMethod)
             val dtoList = remote.createOrder(request)
 
+            // API가 반환하는 필드(orderId, orderNumber, myTurn, etaMinutes)에 맞춰 매핑
+            // 기타 정보는 서버 응답에 없으므로 기본값으로 채움
             val domainList = dtoList.map { dto ->
                 CurrentOrderInfo(
                     orderId = dto.orderId,
                     orderNumber = "${dto.orderNumber}",
-                    shopName = dto.shopName,
+                    shopName = "", // 응답에 없음
                     myTurn = dto.myTurn,
                     etaMinutes = dto.etaMinutes,
                     estimatedWaitTime = "약 ${dto.etaMinutes}분 예상",
-                    totalPrice = dto.totalPrice,
-                    orderedAt = dto.orderedAt,
-                    items = dto.items.map { itemDto ->
-                        OrderItem(
-                            menuName = itemDto.menuName,
-                            quantity = itemDto.quantity,
-                            price = itemDto.price,
-                            options = itemDto.options
-                        )
-                    }
+                    totalPrice = 0, // 응답에 없음
+                    orderedAt = "", // 응답에 없음
+                    items = emptyList() // 응답에 없음
                 )
             }
             Result.success(domainList)
@@ -133,27 +127,29 @@ class OrderRepositoryImpl @Inject constructor(
     // 장바구니 정보 조회
     override suspend fun getShoppingCartInfo(): Result<List<CartStore>> {
         return try {
-            val dtoList = remote.fetchShoppingCartInfo()
-            // DTO to Domain Model 매핑
-            val domainList = dtoList.map { dto ->
+            val dto = remote.fetchShoppingCartInfo()
+
+            // 단일 CartResponseDto -> Domain 모델 리스트로 변환
+            val domainList = listOf(
                 CartStore(
-                    storeId = dto.storeId,
-                    storeName = dto.storeName,
+                    storeId = 0,
+                    storeName = "",
                     cartMenus = dto.items.map { menuDto ->
                         CartMenu(
                             cartItemId = menuDto.cartItemId,
-                            menuId = menuDto.menuId,
+                            menuId = 0,
                             menuName = menuDto.menuName,
                             quantity = menuDto.quantity,
-                            options = menuDto.optionsText.split(", ").map { optionText ->
-                                CartOption(name = optionText.trim())
-                            },
+                            options = menuDto.optionsText.split(",")
+                                .map { it.trim() }
+                                .filter { it.isNotEmpty() }
+                                .map { optionText -> CartOption(name = optionText) },
                             totalPrice = menuDto.price,
-                            storeId = dto.storeId
+                            storeId = 0
                         )
                     }
                 )
-            }
+            )
             Result.success(domainList)
         } catch (e: Exception) {
             Result.failure(e)

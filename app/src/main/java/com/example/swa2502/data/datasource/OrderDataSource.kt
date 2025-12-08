@@ -6,7 +6,7 @@ import com.example.swa2502.data.dto.order.MenuDto
 import com.example.swa2502.data.dto.order.MenuDetailDto
 import javax.inject.Inject
 import com.example.swa2502.data.dto.order.CurrentOrderResponseDto
-import com.example.swa2502.data.dto.order.CartStoreDto
+import com.example.swa2502.data.dto.order.CartResponseDto
 import com.example.swa2502.data.dto.order.CartItemUpdateDto
 import com.example.swa2502.data.dto.order.OrderRequestDto
 import com.example.swa2502.data.dto.order.OrderResponseDto
@@ -48,7 +48,7 @@ class OrderDataSource @Inject constructor(
     }
 
     // 장바구니 정보 조회
-    suspend fun fetchShoppingCartInfo(): List<CartStoreDto> {
+    suspend fun fetchShoppingCartInfo(): CartResponseDto {
         return api.getShoppingCartInfo()
     }
 
