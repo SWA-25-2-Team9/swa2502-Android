@@ -87,7 +87,6 @@ class OrderRepositoryImpl @Inject constructor(
                                 price = itemDto.extraPrice
                             )
                         },
-                        // **기본 선택 로직**: 필수 옵션 그룹이거나 선택 옵션 그룹일 경우 첫 번째 옵션을 선택
                         selectedOptionId = if (groupDto.options.isNotEmpty()) groupDto.options.first().id else null
                     )
                 }
@@ -128,27 +127,29 @@ class OrderRepositoryImpl @Inject constructor(
     // 장바구니 정보 조회
     override suspend fun getShoppingCartInfo(): Result<List<CartStore>> {
         return try {
-            val dtoList = remote.fetchShoppingCartInfo()
-            // DTO to Domain Model 매핑
-            val domainList = dtoList.map { dto ->
+            val dto = remote.fetchShoppingCartInfo()
+
+            // 단일 CartResponseDto -> Domain 모델 리스트로 변환
+            val domainList = listOf(
                 CartStore(
-                    storeId = dto.storeId,
-                    storeName = dto.storeName,
+                    storeId = 0,
+                    storeName = "",
                     cartMenus = dto.items.map { menuDto ->
                         CartMenu(
                             cartItemId = menuDto.cartItemId,
-                            menuId = menuDto.menuId,
+                            menuId = 0,
                             menuName = menuDto.menuName,
                             quantity = menuDto.quantity,
-                            options = menuDto.optionsText.split(", ").map { optionText ->
-                                CartOption(name = optionText.trim())
-                            },
+                            options = menuDto.optionsText.split(",")
+                                .map { it.trim() }
+                                .filter { it.isNotEmpty() }
+                                .map { optionText -> CartOption(name = optionText) },
                             totalPrice = menuDto.price,
-                            storeId = dto.storeId
+                            storeId = 0
                         )
                     }
                 )
-            }
+            )
             Result.success(domainList)
         } catch (e: Exception) {
             Result.failure(e)

@@ -3,12 +3,12 @@ package com.example.swa2502.data.api
 import com.example.swa2502.data.dto.order.CurrentOrderResponseDto
 import com.example.swa2502.data.dto.order.MenuDto
 import com.example.swa2502.data.dto.order.MenuDetailDto
-import com.example.swa2502.data.dto.order.CartStoreDto
 import com.example.swa2502.data.dto.order.CartItemUpdateDto
 import com.example.swa2502.data.dto.order.OrderRequestDto
 import com.example.swa2502.data.dto.order.OrderResponseDto
 import com.example.swa2502.data.dto.order.CartAddRequestDto
 import com.example.swa2502.data.dto.order.CartAddResponseDto
+import com.example.swa2502.data.dto.order.CartResponseDto
 import com.example.swa2502.data.dto.order.ClearShoppingCartDto
 import com.example.swa2502.data.dto.order.DeleteCartItemResponseDto
 import retrofit2.http.GET
@@ -44,7 +44,7 @@ interface OrderApi {
 
     // 장바구니 조회 API (구현완료)
     @GET("api/v1/cart")
-    suspend fun getShoppingCartInfo(): List<CartStoreDto>
+    suspend fun getShoppingCartInfo(): CartResponseDto
 
     // 장바구니 추가 (구현완료)
     @POST("api/v1/carts")

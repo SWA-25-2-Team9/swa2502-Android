@@ -33,7 +33,7 @@ class LoginViewModel @Inject constructor(
             
             loginUseCase(userId, password)
                 .onSuccess { response ->
-                    // 토큰 저장 후 상태 업데이트
+                    // 토큰 저장
                     tokenManager.saveAccessToken(response.accessToken)
                     tokenManager.saveRefreshToken(response.refreshToken)
 

@@ -4,11 +4,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 //사용
 @Serializable
-data class CartStoreDto(
-    @SerialName("storeId")
-    val storeId: Int,
-    @SerialName("storeName")
-    val storeName: String,
+data class CartResponseDto(
+    @SerialName("cartCount")
+    val cartCount: Int,
     @SerialName("totalPrice")
     val totalPrice: Int,
     @SerialName("items")
@@ -19,8 +17,6 @@ data class CartStoreDto(
 data class CartMenuDto(
     @SerialName("cartItemId")
     val cartItemId: Int,
-    @SerialName("menuId")
-    val menuId: Int,
     @SerialName("menuName")
     val menuName: String,
     @SerialName("quantity")
