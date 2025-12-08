@@ -81,7 +81,7 @@ private fun OrderMenuScreenContent(
                         .clickable(onClick = onBackClick)
                 )
 
-                // 메뉴 이름
+                // 가게 이름
                 Text(
                     text = "${uiState.storeName}",
                     fontSize = 18.sp,

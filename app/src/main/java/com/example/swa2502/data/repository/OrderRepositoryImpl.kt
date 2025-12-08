@@ -104,24 +104,19 @@ class OrderRepositoryImpl @Inject constructor(
             val request = OrderRequestDto(request = paymentMethod)
             val dtoList = remote.createOrder(request)
 
+            // API가 반환하는 필드(orderId, orderNumber, myTurn, etaMinutes)에 맞춰 매핑
+            // 기타 정보는 서버 응답에 없으므로 기본값으로 채움
             val domainList = dtoList.map { dto ->
                 CurrentOrderInfo(
                     orderId = dto.orderId,
                     orderNumber = "${dto.orderNumber}",
-                    shopName = dto.shopName,
+                    shopName = "", // 응답에 없음
                     myTurn = dto.myTurn,
                     etaMinutes = dto.etaMinutes,
                     estimatedWaitTime = "약 ${dto.etaMinutes}분 예상",
-                    totalPrice = dto.totalPrice,
-                    orderedAt = dto.orderedAt,
-                    items = dto.items.map { itemDto ->
-                        OrderItem(
-                            menuName = itemDto.menuName,
-                            quantity = itemDto.quantity,
-                            price = itemDto.price,
-                            options = itemDto.options
-                        )
-                    }
+                    totalPrice = 0, // 응답에 없음
+                    orderedAt = "", // 응답에 없음
+                    items = emptyList() // 응답에 없음
                 )
             }
             Result.success(domainList)

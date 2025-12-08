@@ -3,6 +3,7 @@ package com.example.swa2502.presentation.viewmodel.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.swa2502.domain.usecase.auth.LoginUseCase
+import com.example.swa2502.core.network.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +21,8 @@ data class LoginUiState(
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val tokenManager: TokenManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
@@ -31,6 +33,10 @@ class LoginViewModel @Inject constructor(
             
             loginUseCase(userId, password)
                 .onSuccess { response ->
+                    // 토큰 저장 후 상태 업데이트
+                    tokenManager.saveAccessToken(response.accessToken)
+                    tokenManager.saveRefreshToken(response.refreshToken)
+
                     _uiState.update {
                         it.copy(
                             isLoading = false,
