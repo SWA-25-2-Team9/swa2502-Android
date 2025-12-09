@@ -116,15 +116,28 @@ class MainActivity : ComponentActivity() {
                                     selected = selected,
                                     onClick = {
                                         navController.navigate(item.route) {
-                                            // Home 화면까지 모든 백스택 제거 (Bottom Nav의 첫 화면)
-                                            popUpTo(Route.ShopOverview.route) {
-                                                inclusive = false
-                                                saveState = true
+                                            // 홈 아이콘 클릭 시 ShopOverview로 이동
+                                            if (item.route == Route.ShopOverview.route) {
+                                                // ShopOverview를 포함하여 그 위의 모든 화면을 pop
+                                                popUpTo(0) {
+                                                    saveState = true
+                                                }
+                                                // 같은 화면이 스택에 있으면 재사용하지 않고 새로 생성
+                                                launchSingleTop = false
+                                                // 이전 상태 복원
+                                                restoreState = true
+                                            } else {
+                                                // 다른 bottom nav 아이템 클릭 시
+                                                // ShopOverview까지 모든 백스택 제거 (Bottom Nav의 첫 화면)
+                                                popUpTo(Route.ShopOverview.route) {
+                                                    inclusive = false
+                                                    saveState = true
+                                                }
+                                                // 같은 화면이 스택에 있으면 재사용
+                                                launchSingleTop = true
+                                                // 이전 상태 복원
+                                                restoreState = true
                                             }
-                                            // 같은 화면이 스택에 있으면 재사용
-                                            launchSingleTop = true
-                                            // 이전 상태 복원
-                                            restoreState = true
                                         }
                                     },
                                     colors =

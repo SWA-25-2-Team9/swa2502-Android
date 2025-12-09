@@ -200,29 +200,41 @@ fun PayScreenContent(
         },
         modifier = modifier.background(Color(0xFFF5F5F5))
     ) { paddingValues ->
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp, vertical = 24.dp)
-        ) {
-            PaymentMethodCard( // 로컬 함수 호출
-                selectedMethod = uiState.selectedPaymentMethod,
-                onPaymentSelected = onPaymentSelected
-            )
-            Spacer(modifier = Modifier.height(32.dp))
-            TotalPaymentRow(formattedPrice) // 로컬 함수 호출
-
-            // 에러 메시지 표시
-            if (uiState.errorMessage != null) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = uiState.errorMessage,
-                    color = Color.Red,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+        if (uiState.isLoading && uiState.totalPrice == 0) {
+            // 초기 로딩 중일 때 로딩 인디케이터 표시
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp, vertical = 24.dp)
+            ) {
+                PaymentMethodCard( // 로컬 함수 호출
+                    selectedMethod = uiState.selectedPaymentMethod,
+                    onPaymentSelected = onPaymentSelected
                 )
+                Spacer(modifier = Modifier.height(32.dp))
+                TotalPaymentRow(formattedPrice) // 로컬 함수 호출
+
+                // 에러 메시지 표시
+                if (uiState.errorMessage != null) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = uiState.errorMessage,
+                        color = Color.Red,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
             }
         }
     }

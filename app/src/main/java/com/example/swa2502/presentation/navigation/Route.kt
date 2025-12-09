@@ -12,7 +12,10 @@ sealed class Route(val route: String) {
     object ShopOverview: Route(route = "shopOverview")
 
     // 주문 관련
-    object OrderMenu: Route(route = "orderMenu")
+    object OrderMenu: Route(route = "orderMenu/{shopId}/{shopName}") {
+        fun createRoute(shopId: String, shopName: String): String =
+            "orderMenu/$shopId/${java.net.URLEncoder.encode(shopName, "UTF-8")}"
+    }
     object MenuOption: Route(route = "menuOption/{menuId}"){
         fun createRoute(menuId: Int) = "menuOption/$menuId"
     }
