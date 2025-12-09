@@ -146,7 +146,8 @@ private fun MenuOptionScreenContent(
             ) {
                 LazyColumn(
                     modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(bottom = 16.dp)
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     // 옵션 그룹
                     items(uiState.optionGroups) { group ->

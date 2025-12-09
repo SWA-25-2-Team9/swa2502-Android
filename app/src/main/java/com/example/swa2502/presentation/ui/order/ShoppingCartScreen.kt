@@ -51,6 +51,7 @@ fun ShoppingCartScreen(
         onQuantityChange = { cartItemId, newQuantity -> viewModel.onQuantityChange(cartItemId, newQuantity) },
         onDeleteMenu = viewModel::onDeleteMenu,
         onDeleteStore = viewModel::onDeleteStore,
+        onClearAll = viewModel::onClearAll,
     )
 }
 
@@ -66,6 +67,7 @@ fun ShoppingCartScreenContent(
     onQuantityChange: (Int, Int) -> Unit,
     onDeleteMenu: (Int) -> Unit,
     onDeleteStore: (Int) -> Unit,
+    onClearAll: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -136,9 +138,8 @@ fun ShoppingCartScreenContent(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp),
-                contentPadding = PaddingValues(vertical = 16.dp),
+                    .padding(paddingValues),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(uiState.cartStores, key = { it.storeId }) { cartStore ->
@@ -146,7 +147,8 @@ fun ShoppingCartScreenContent(
                         cartStore = cartStore,
                         onQuantityChange = onQuantityChange,
                         onDeleteMenu = onDeleteMenu,
-                        onDeleteStore = onDeleteStore
+                        onDeleteStore = onDeleteStore,
+                        onClearAll = onClearAll
                     )
                 }
             }
@@ -163,6 +165,7 @@ fun CartStoreItem(
     onQuantityChange: (Int, Int) -> Unit,
     onDeleteMenu: (Int) -> Unit,
     onDeleteStore: (Int) -> Unit,
+    onClearAll: () -> Unit,
 ) {
     Card(
         shape = RoundedCornerShape(10.dp),
@@ -182,10 +185,11 @@ fun CartStoreItem(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Filled.Close,
-                        contentDescription = "선택 표시",
+                        contentDescription = "전체삭제",
                         tint = Color(0xFFFF9800),
                         modifier = Modifier
                             .size(24.dp)
+                            .clickable(onClick = onClearAll)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
@@ -361,6 +365,7 @@ private fun ShoppingCartScreenContentPreview() {
         onQuantityChange = { _, _ -> },
         onDeleteMenu = {},
         onDeleteStore = {},
+        onClearAll = {},
     )
 }
 
@@ -374,5 +379,6 @@ private fun ShoppingCartScreenContentEmptyPreview() {
         onQuantityChange = { _, _ -> },
         onDeleteMenu = {},
         onDeleteStore = {},
+        onClearAll = {},
     )
 }

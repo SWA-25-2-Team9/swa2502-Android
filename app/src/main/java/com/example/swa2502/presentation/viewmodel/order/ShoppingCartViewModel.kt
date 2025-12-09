@@ -145,6 +145,33 @@ class ShoppingCartViewModel @Inject constructor(
         }
     }
 
+    // 장바구니 전체 삭제
+    fun onClearAll() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            clearShoppingCartUseCase()
+                .onSuccess {
+                    _uiState.update { 
+                        it.copy(
+                            cartStores = emptyList(), 
+                            totalAmount = 0, 
+                            errorMessage = null, 
+                            isLoading = false
+                        ) 
+                    }
+                }
+                .onFailure { error ->
+                    _uiState.update { 
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = error.message ?: "장바구니 전체 삭제에 실패했습니다."
+                        ) 
+                    }
+                    loadShoppingCartInfo()
+                }
+        }
+    }
+
     fun refreshShoppingCart() {
         loadShoppingCartInfo()
     }
