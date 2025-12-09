@@ -179,13 +179,13 @@ fun CartStoreItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // 상점 선택/이름
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Filled.Close,
                         contentDescription = "선택 표시",
                         tint = Color(0xFFFF9800),
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier
+                            .size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(

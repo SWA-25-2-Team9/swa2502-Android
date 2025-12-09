@@ -87,33 +87,38 @@ private fun CardHeader(orderInfo: CurrentOrderInfo) {
 
 @Composable
 private fun OrderSummarySection(orderInfo: CurrentOrderInfo) {
-    val firstItem = orderInfo.items.firstOrNull()
-
-    if (firstItem != null) {
-        // 첫 번째 메뉴 이름
-        Column (
-            modifier = Modifier.fillMaxWidth(),
-        ) {
+    // 모든 메뉴 항목 표시
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        orderInfo.items.forEachIndexed { index, item ->
+            // 메뉴 이름과 가격
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
-            ){
+            ) {
                 Text(
-                    text = firstItem.menuName,
+                    text = "${item.menuName} x${item.quantity}",
                     style = TextStyle(fontSize = 16.sp, fontFamily = PretendardSemiBold, color = Color.Black)
                 )
                 Text(
-                    text = "${firstItem.price}원",
+                    text = "${item.price}원",
                     style = TextStyle(fontSize = 16.sp, fontFamily = PretendardSemiBold, color = Color.Black)
                 )
             }
             // 옵션 목록
-            firstItem.options.forEach { option ->
+            item.options.forEach { option ->
                 Text(
                     text = "-$option",
                     style = TextStyle(fontSize = 14.sp, fontFamily = PretendardRegular, color = TextGray),
                     modifier = Modifier.padding(start = 5.dp, top = 2.dp)
                 )
+            }
+            // 마지막 항목이 아니면 구분선 추가
+            if (index < orderInfo.items.size - 1) {
+                Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider(color = DividerGray, thickness = 0.5.dp)
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }

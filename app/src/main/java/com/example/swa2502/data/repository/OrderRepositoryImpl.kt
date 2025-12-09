@@ -155,15 +155,22 @@ class OrderRepositoryImpl @Inject constructor(
                     menuDto.price * menuDto.quantity
                 }
                 
+                // 옵션 ID를 옵션 이름으로 변환
+                val optionNames = if (menuId > 0 && selectedOptions.isNotEmpty()) {
+                    convertOptionIdsToNames(menuId, selectedOptions)
+                } else {
+                    // menuId가 없으면 optionsText를 그대로 사용 (이미 옵션 이름일 수 있음)
+                    menuDto.optionsText.split(",")
+                        .map { it.trim() }
+                        .filter { it.isNotEmpty() }
+                }
+                
                 CartMenu(
                     cartItemId = menuDto.cartItemId,
                     menuId = menuId,
                     menuName = menuDto.menuName,
                     quantity = menuDto.quantity,
-                    options = menuDto.optionsText.split(",")
-                        .map { it.trim() }
-                        .filter { it.isNotEmpty() }
-                        .map { optionText -> CartOption(name = optionText) },
+                    options = optionNames.map { optionName -> CartOption(name = optionName) },
                     totalPrice = totalPrice,
                     storeId = 0
                 )
@@ -205,6 +212,29 @@ class OrderRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             // 에러 발생 시 서버가 반환한 가격 * 수량 사용
             basePrice * quantity
+        }
+    }
+
+    // 옵션 ID를 옵션 이름으로 변환
+    private suspend fun convertOptionIdsToNames(menuId: Int, selectedOptions: List<Long>): List<String> {
+        return try {
+            // 메뉴 상세 정보를 가져와서 옵션 정보 확인
+            val menuDetailDto = remote.fetchMenuDetail(menuId)
+            
+            // 모든 옵션을 ID -> 이름 맵으로 변환
+            val optionIdToNameMap = menuDetailDto.optionGroups.flatMap { group ->
+                group.options.map { option ->
+                    option.id.toLong() to option.name
+                }
+            }.toMap()
+            
+            // 선택된 옵션 ID들을 옵션 이름으로 변환
+            selectedOptions.mapNotNull { optionId ->
+                optionIdToNameMap[optionId]
+            }
+        } catch (e: Exception) {
+            // 에러 발생 시 빈 리스트 반환
+            emptyList()
         }
     }
 
