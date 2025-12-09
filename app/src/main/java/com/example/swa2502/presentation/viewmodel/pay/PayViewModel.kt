@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import kotlinx.coroutines.flow.update
 import com.example.swa2502.domain.usecase.order.CreateOrderUseCase
+import com.example.swa2502.domain.usecase.order.GetShoppingCartInfoUseCase
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
@@ -26,19 +27,44 @@ data class PayUiState(
 
 @HiltViewModel
 class PayViewModel @Inject constructor(
-    private val createOrderUseCase: CreateOrderUseCase
+    private val createOrderUseCase: CreateOrderUseCase,
+    private val getShoppingCartInfoUseCase: GetShoppingCartInfoUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(PayUiState())
     val uiState: StateFlow<PayUiState> = _uiState.asStateFlow()
 
     init {
-        // 더미 데이터 로드 (이미지의 10,000원)
+        // 장바구니 정보를 가져와서 총 금액 계산
         loadPaymentInfo()
     }
 
     private fun loadPaymentInfo() {
-        _uiState.update {
-            it.copy(totalPrice = 10000)
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            
+            getShoppingCartInfoUseCase()
+                .onSuccess { cartStores ->
+                    // 장바구니의 모든 항목의 총 금액 계산
+                    val total = cartStores.sumOf { store ->
+                        store.cartMenus.sumOf { it.totalPrice }
+                    }
+                    _uiState.update {
+                        it.copy(
+                            totalPrice = total,
+                            isLoading = false,
+                            errorMessage = null
+                        )
+                    }
+                }
+                .onFailure { error ->
+                    _uiState.update {
+                        it.copy(
+                            totalPrice = 0,
+                            isLoading = false,
+                            errorMessage = error.message ?: "장바구니 정보를 불러오는 데 실패했습니다."
+                        )
+                    }
+                }
         }
     }
 

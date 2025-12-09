@@ -69,14 +69,20 @@ fun MainNavGraph(
         composable(route = Route.ShopOverview.route){
             ShopOverviewScreen(
                 modifier = modifier,
-                onNavigateToOrder = {
-                    navController.navigate(Route.OrderMenu.route)
+                onNavigateToOrder = { shopId, shopName ->
+                    navController.navigate(Route.OrderMenu.createRoute(shopId, shopName))
                 }
             )
         }
 
         /* 주문 */
-        composable(route = Route.OrderMenu.route){
+        composable(
+            route = Route.OrderMenu.route,
+            arguments = listOf(
+                navArgument("shopId") { type = NavType.StringType },
+                navArgument("shopName") { type = NavType.StringType },
+            )
+        ){
             OrderMenuScreen(
                 modifier = modifier,
                 onBackClick = {
@@ -102,7 +108,7 @@ fun MainNavGraph(
                 onBackClick = { navController.navigateUp() },
                 onCartClick = { navController.navigate(Route.ShoppingCart.route) },
                 onAddToCartClick = {
-                    navController.navigate(Route.OrderMenu.route)
+                    navController.navigateUp() // OrderMenu에 전달된 shopId/shopName 인자 보존
                 }
             )
         }

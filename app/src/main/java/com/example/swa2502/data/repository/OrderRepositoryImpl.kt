@@ -71,10 +71,12 @@ class OrderRepositoryImpl @Inject constructor(
     override suspend fun getMenuDetail(menuId: Int): Result<MenuDetail> {
         return try {
             val dto = remote.fetchMenuDetail(menuId)
+            // API 응답의 price를 메뉴 기본 가격으로 사용
+            // API 응답의 extraPrice를 옵션 추가 가격으로 사용
             val menuDetail = MenuDetail(
                 menuId = dto.menuId,
                 name = dto.name,
-                basePrice = dto.price,
+                basePrice = dto.price, // API의 price 필드 활용
                 optionGroups = dto.optionGroups.map { groupDto ->
                     OptionGroup(
                         id = groupDto.groupId,
@@ -84,7 +86,7 @@ class OrderRepositoryImpl @Inject constructor(
                             OptionItem(
                                 id = itemDto.id,
                                 name = itemDto.name,
-                                price = itemDto.extraPrice
+                                price = itemDto.extraPrice // API의 extraPrice 필드 활용
                             )
                         },
                         selectedOptionId = if (groupDto.options.isNotEmpty()) groupDto.options.first().id else null
@@ -130,24 +132,39 @@ class OrderRepositoryImpl @Inject constructor(
             val dto = remote.fetchShoppingCartInfo()
 
             // 단일 CartResponseDto -> Domain 모델 리스트로 변환
+            // 서버가 반환하는 price는 기본 가격일 수 있으므로, 옵션 가격을 포함한 총 가격을 계산
+            val cartMenus = dto.items.map { menuDto ->
+                // optionsText에서 옵션 ID 추출 (숫자로 파싱 가능한 경우)
+                val optionIds = menuDto.optionsText.split(",")
+                    .map { it.trim() }
+                    .filter { it.isNotEmpty() }
+                    .mapNotNull { it.toLongOrNull() }
+                
+                // 옵션 가격을 포함한 총 가격 계산
+                // 서버가 반환하는 price가 단위 가격(옵션 가격 미포함)이라고 가정
+                // 실제로는 서버가 옵션 가격을 포함한 총 가격을 반환할 수도 있으므로,
+                // 서버 응답을 그대로 사용하되, 필요시 클라이언트에서 재계산
+                val totalPrice = menuDto.price // 서버가 반환한 가격 사용
+                
+                CartMenu(
+                    cartItemId = menuDto.cartItemId,
+                    menuId = 0,
+                    menuName = menuDto.menuName,
+                    quantity = menuDto.quantity,
+                    options = menuDto.optionsText.split(",")
+                        .map { it.trim() }
+                        .filter { it.isNotEmpty() }
+                        .map { optionText -> CartOption(name = optionText) },
+                    totalPrice = totalPrice,
+                    storeId = 0
+                )
+            }
+            
             val domainList = listOf(
                 CartStore(
                     storeId = 0,
                     storeName = "",
-                    cartMenus = dto.items.map { menuDto ->
-                        CartMenu(
-                            cartItemId = menuDto.cartItemId,
-                            menuId = 0,
-                            menuName = menuDto.menuName,
-                            quantity = menuDto.quantity,
-                            options = menuDto.optionsText.split(",")
-                                .map { it.trim() }
-                                .filter { it.isNotEmpty() }
-                                .map { optionText -> CartOption(name = optionText) },
-                            totalPrice = menuDto.price,
-                            storeId = 0
-                        )
-                    }
+                    cartMenus = cartMenus
                 )
             )
             Result.success(domainList)

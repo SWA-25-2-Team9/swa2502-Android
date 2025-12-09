@@ -114,11 +114,14 @@ class MenuOptionViewModel @Inject constructor(
     }
 
     // 최종 가격 계산 로직
+    // API 응답의 price(메뉴 기본 가격)와 extraPrice(옵션 추가 가격)를 활용
     private fun calculateTotal(basePrice: Int, quantity: Int, groups: List<OptionGroup>): Int {
-        val selectedOptionPrice = groups.sumOf { group ->
+        // 선택된 옵션들의 extraPrice 합계 계산
+        val selectedOptionExtraPrice = groups.sumOf { group ->
             group.options.find { it.id == group.selectedOptionId }?.price ?: 0
         }
-        return (basePrice + selectedOptionPrice) * quantity
+        // (메뉴 기본 가격 + 옵션 추가 가격 합계) * 수량
+        return (basePrice + selectedOptionExtraPrice) * quantity
     }
 
     // 카트 담기 로직

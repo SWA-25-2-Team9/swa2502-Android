@@ -48,7 +48,7 @@ import com.example.swa2502.presentation.viewmodel.shop.ShopOverviewViewModel
 @Composable
 fun ShopOverviewScreen(
     modifier: Modifier = Modifier,
-    onNavigateToOrder: () -> Unit,
+    onNavigateToOrder: (shopId: String, shopName: String) -> Unit,
 ) {
     val viewModel: ShopOverviewViewModel = hiltViewModel()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
@@ -67,7 +67,7 @@ fun ShopOverviewScreenContent(
     modifier: Modifier = Modifier,
     uiState: ShopOverviewUiState,
     onRestaurantSelected: (Int) -> Unit,
-    onNavigateToOrder: () -> Unit,
+    onNavigateToOrder: (shopId: String, shopName: String) -> Unit,
 ) {
     var dropdownExpanded by remember { mutableStateOf(false) }
     val selectedRestaurant = uiState.restaurants.find { it.restaurantId == uiState.selectedRestaurantId }
@@ -173,7 +173,7 @@ fun ShopOverviewScreenContent(
                     shopState = shopInfo.shopState,
                     shopName = shopInfo.shopName,
                     queueSize = shopInfo.queueSize,
-                    onNavigateToOrder = onNavigateToOrder
+                    onNavigateToOrder = { onNavigateToOrder(shopInfo.shopId, shopInfo.shopName) }
                 )
                 Spacer(modifier = Modifier.size(12.dp))
             }
@@ -209,6 +209,6 @@ private fun ShopOverviewScreenContentPreview() {
             )
         ),
         onRestaurantSelected = {},
-        onNavigateToOrder = {}
+        onNavigateToOrder = { _, _ -> }
     )
 }

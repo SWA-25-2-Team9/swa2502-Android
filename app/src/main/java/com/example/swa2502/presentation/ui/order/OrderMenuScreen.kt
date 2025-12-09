@@ -19,6 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.compose.runtime.DisposableEffect
 import com.example.swa2502.R
 import com.example.swa2502.domain.model.MenuItem
 import com.example.swa2502.presentation.viewmodel.order.OrderMenuUiState
@@ -34,6 +39,20 @@ fun OrderMenuScreen(
 ) {
     val viewModel: OrderMenuViewModel = hiltViewModel()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+
+    // 화면이 resume될 때마다 장바구니 총 금액 갱신
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.refreshCartTotal()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     OrderMenuScreenContent(
         modifier = modifier,
