@@ -165,7 +165,8 @@ private fun OrderMenuScreenContent(
                     .fillMaxSize()
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp),
-                contentPadding = PaddingValues(top = 16.dp)
+                contentPadding = PaddingValues(vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(uiState.menuList) { menuItem ->
                     MenuItemRow(

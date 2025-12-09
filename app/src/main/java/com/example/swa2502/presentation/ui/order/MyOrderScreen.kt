@@ -83,19 +83,28 @@ fun MyOrderScreenContent(
             )
         }
     ) { paddingValues ->
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(BackgroundGray)
-        ) {
-            when {
-                uiState.isLoading -> {
-                    CircularProgressIndicator(Modifier.align(Alignment.Center), color = PrimaryColor)
+        when {
+            uiState.isLoading -> {
+                Box(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .background(BackgroundGray),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = PrimaryColor)
                 }
-                uiState.errorMessage != null -> {
+            }
+            uiState.errorMessage != null -> {
+                Box(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .background(BackgroundGray),
+                    contentAlignment = Alignment.Center
+                ) {
                     Column(
-                        modifier = Modifier.align(Alignment.Center).padding(16.dp),
+                        modifier = Modifier.padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(text = "⚠️ 오류 발생", color = Color.Red)
@@ -104,22 +113,33 @@ fun MyOrderScreenContent(
                         Button(onClick = onRefresh) { Text("새로고침") }
                     }
                 }
-                uiState.orderList.isEmpty() -> {
+            }
+            uiState.orderList.isEmpty() -> {
+                Box(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .background(BackgroundGray),
+                    contentAlignment = Alignment.Center
+                ) {
                     Text(
                         text = "현재 진행 중인 주문이 없습니다.",
-                        modifier = Modifier.align(Alignment.Center)
+                        color = Color.Gray
                     )
                 }
-                else -> {
-                    // 주문 목록 표시
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        items(uiState.orderList) { order ->
-                            CurrentOrderCard(orderInfo = order) // 분리된 컴포넌트 사용
-                        }
+            }
+            else -> {
+                // 주문 목록 표시
+                LazyColumn(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .background(BackgroundGray),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(uiState.orderList) { order ->
+                        CurrentOrderCard(orderInfo = order) // 분리된 컴포넌트 사용
                     }
                 }
             }
