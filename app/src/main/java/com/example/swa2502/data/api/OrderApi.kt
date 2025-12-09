@@ -43,7 +43,7 @@ interface OrderApi {
     ): List<OrderResponseDto>
 
     // 장바구니 조회 API (구현완료)
-    @GET("api/v1/cart")
+    @GET("api/v1/carts")
     suspend fun getShoppingCartInfo(): CartResponseDto
 
     // 장바구니 추가 (구현완료)
