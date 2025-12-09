@@ -20,10 +20,16 @@ import com.example.swa2502.data.dto.order.CartAddResponseDto
 import com.example.swa2502.data.dto.order.DeleteCartItemResponseDto
 import com.example.swa2502.data.dto.order.ClearShoppingCartDto
 import javax.inject.Inject
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class OrderRepositoryImpl @Inject constructor(
     private val remote: OrderDataSource
 ): OrderRepository {
+    // 장바구니 항목의 menuId와 selectedOptions를 저장 (cartItemId -> Pair<menuId, selectedOptions>)
+    // 서버가 반환하는 price가 옵션 가격을 포함하지 않으므로, 클라이언트에서 옵션 가격을 재계산하기 위해 필요
+    private val cartItemInfoMap = mutableMapOf<Int, Pair<Int, List<Long>>>()
+    private val cartItemInfoMutex = Mutex()
     override suspend fun getMenuList(shopId: Int): Result<List<MenuItem>> {
         return try {
             val dtoList = remote.fetchMenuList(shopId)
@@ -132,23 +138,26 @@ class OrderRepositoryImpl @Inject constructor(
             val dto = remote.fetchShoppingCartInfo()
 
             // 단일 CartResponseDto -> Domain 모델 리스트로 변환
-            // 서버가 반환하는 price는 기본 가격일 수 있으므로, 옵션 가격을 포함한 총 가격을 계산
+            // 서버가 반환하는 price는 옵션 가격을 포함하지 않은 기본 가격이므로,
+            // 클라이언트에서 옵션 가격을 포함한 총 가격을 계산
             val cartMenus = dto.items.map { menuDto ->
-                // optionsText에서 옵션 ID 추출 (숫자로 파싱 가능한 경우)
-                val optionIds = menuDto.optionsText.split(",")
-                    .map { it.trim() }
-                    .filter { it.isNotEmpty() }
-                    .mapNotNull { it.toLongOrNull() }
+                // 저장된 menuId와 selectedOptions 가져오기
+                val (menuId, selectedOptions) = cartItemInfoMutex.withLock {
+                    cartItemInfoMap[menuDto.cartItemId] ?: Pair(0, emptyList())
+                }
                 
                 // 옵션 가격을 포함한 총 가격 계산
-                // 서버가 반환하는 price가 단위 가격(옵션 가격 미포함)이라고 가정
-                // 실제로는 서버가 옵션 가격을 포함한 총 가격을 반환할 수도 있으므로,
-                // 서버 응답을 그대로 사용하되, 필요시 클라이언트에서 재계산
-                val totalPrice = menuDto.price // 서버가 반환한 가격 사용
+                val totalPrice = if (menuId > 0 && selectedOptions.isNotEmpty()) {
+                    // 저장된 menuId로 메뉴 상세 정보를 가져와서 옵션 가격 계산
+                    calculateCartItemPriceWithOptions(menuId, menuDto.price, selectedOptions, menuDto.quantity)
+                } else {
+                    // menuId가 없거나 옵션이 없으면 서버가 반환한 가격 * 수량
+                    menuDto.price * menuDto.quantity
+                }
                 
                 CartMenu(
                     cartItemId = menuDto.cartItemId,
-                    menuId = 0,
+                    menuId = menuId,
                     menuName = menuDto.menuName,
                     quantity = menuDto.quantity,
                     options = menuDto.optionsText.split(",")
@@ -173,6 +182,32 @@ class OrderRepositoryImpl @Inject constructor(
         }
     }
 
+    // 장바구니 항목의 옵션 가격을 포함한 총 가격 계산
+    private suspend fun calculateCartItemPriceWithOptions(menuId: Int, basePrice: Int, selectedOptions: List<Long>, quantity: Int): Int {
+        return try {
+            // 메뉴 상세 정보를 가져와서 옵션 가격 계산
+            val menuDetailDto = remote.fetchMenuDetail(menuId)
+            
+            // 모든 옵션을 ID -> 가격 맵으로 변환
+            val optionIdToPriceMap = menuDetailDto.optionGroups.flatMap { group ->
+                group.options.map { option ->
+                    option.id.toLong() to option.extraPrice
+                }
+            }.toMap()
+            
+            // 선택된 옵션들의 가격 합계 계산
+            val totalOptionPrice = selectedOptions.sumOf { optionId ->
+                optionIdToPriceMap[optionId] ?: 0
+            }
+            
+            // (기본 가격 + 옵션 가격 합계) * 수량
+            (basePrice + totalOptionPrice) * quantity
+        } catch (e: Exception) {
+            // 에러 발생 시 서버가 반환한 가격 * 수량 사용
+            basePrice * quantity
+        }
+    }
+
     // 장바구니 추가
     override suspend fun addCart(menuId: Int, quantity: Int, selectedOptions: List<Long>): Result<Int> {
         return try {
@@ -182,6 +217,13 @@ class OrderRepositoryImpl @Inject constructor(
                 selectedOptions = selectedOptions
             )
             val response = remote.addCart(request)
+            
+            // 장바구니 추가 성공 시, cartItemId와 menuId, selectedOptions를 저장
+            // 장바구니 조회 시 옵션 가격을 재계산하기 위해 필요
+            cartItemInfoMutex.withLock {
+                cartItemInfoMap[response.cartItemId] = Pair(menuId, selectedOptions)
+            }
+            
             Result.success(response.cartCount)
         } catch (e: Exception) {
             Result.failure(e)
@@ -200,6 +242,12 @@ class OrderRepositoryImpl @Inject constructor(
     override suspend fun deleteCartItem(cartItemId: Int): Result<Int> {
         return try {
             val response = remote.deleteCartItem(cartItemId)
+            
+            // 장바구니 항목 삭제 시 저장된 정보도 삭제
+            cartItemInfoMutex.withLock {
+                cartItemInfoMap.remove(cartItemId)
+            }
+            
             Result.success(response.cartCount)
         } catch (e: Exception) {
             Result.failure(e)
@@ -210,6 +258,12 @@ class OrderRepositoryImpl @Inject constructor(
     override suspend fun clearShoppingCart(): Result<Unit> {
         return try {
             remote.clearShoppingCart()
+            
+            // 장바구니 전체 비우기 시 저장된 정보도 모두 삭제
+            cartItemInfoMutex.withLock {
+                cartItemInfoMap.clear()
+            }
+            
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
