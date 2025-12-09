@@ -80,7 +80,7 @@ fun MainNavGraph(
             OrderMenuScreen(
                 modifier = modifier,
                 onBackClick = {
-                    navController.navigateUp()
+                    navController.navigate(Route.ShopOverview.route)
                 },
                 onCartClick = {
                     navController.navigate(Route.ShoppingCart.route)
