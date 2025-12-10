@@ -14,6 +14,7 @@ import com.example.swa2502.data.dto.order.CartAddRequestDto
 import com.example.swa2502.data.dto.order.CartAddResponseDto
 import com.example.swa2502.data.dto.order.DeleteCartItemResponseDto
 import com.example.swa2502.data.dto.order.ClearShoppingCartDto
+import retrofit2.HttpException
 
 class OrderDataSource @Inject constructor(
     private val api: OrderApi
@@ -31,7 +32,28 @@ class OrderDataSource @Inject constructor(
      * @return List<CurrentOrderResponseDto>
      */
     suspend fun getCurrentOrder(): List<CurrentOrderResponseDto> {
-        return api.getCurrentOrder()
+        return try {
+            api.getCurrentOrder()
+        } catch (e: HttpException) {
+            // 204 No Content는 주문이 없음을 의미하므로 빈 리스트 반환
+            if (e.code() == 204) {
+                emptyList()
+            } else {
+                throw e
+            }
+        } catch (e: Exception) {
+            // Retrofit이 null body를 non-null List로 파싱하려고 할 때 발생하는 에러 처리
+            // "response was null but response body type was declared as non-null" 에러
+            if (e.message?.contains("was null but response body type was declared as non-null") == true ||
+                e.message?.contains("No Content") == true || 
+                e.message?.contains("204") == true ||
+                e.message?.contains("Unexpected end of stream") == true ||
+                e.message?.contains("Expected BEGIN_ARRAY") == true) {
+                emptyList()
+            } else {
+                throw e
+            }
+        }
     }
 
     /**
