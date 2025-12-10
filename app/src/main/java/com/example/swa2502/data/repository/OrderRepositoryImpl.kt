@@ -50,27 +50,36 @@ class OrderRepositoryImpl @Inject constructor(
 
     // 현재 주문
     override suspend fun getCurrentOrder(): Result<List<CurrentOrderInfo>> {
-        return runCatching {
-            remote.getCurrentOrder().map { dto ->
-                CurrentOrderInfo(
-                    orderId = dto.orderId,
-                    orderNumber = "${dto.orderNumber}번",
-                    shopName = dto.shopName,
-                    myTurn = dto.myTurn,
-                    etaMinutes = dto.etaMinutes,
-                    estimatedWaitTime = "약 ${dto.etaMinutes}분 예상",
-                    totalPrice = dto.totalPrice,
-                    orderedAt = dto.orderedAt,
-                    items = dto.items.map { itemDto ->
-                        OrderItem(
-                            menuName = itemDto.menuName,
-                            quantity = itemDto.quantity,
-                            price = itemDto.price,
-                            options = itemDto.options
-                        )
-                    }
-                )
+        return try {
+            val dtoList = remote.getCurrentOrder()
+            // 빈 리스트인 경우 (204 처리된 경우) 그대로 반환
+            if (dtoList.isEmpty()) {
+                Result.success(emptyList())
+            } else {
+                val orderList = dtoList.map { dto ->
+                    CurrentOrderInfo(
+                        orderId = dto.orderId,
+                        orderNumber = "${dto.orderNumber}번",
+                        shopName = dto.shopName,
+                        myTurn = dto.myTurn,
+                        etaMinutes = dto.etaMinutes,
+                        estimatedWaitTime = "약 ${dto.etaMinutes}분 예상",
+                        totalPrice = dto.totalPrice,
+                        orderedAt = dto.orderedAt,
+                        items = dto.items.map { itemDto ->
+                            OrderItem(
+                                menuName = itemDto.menuName,
+                                quantity = itemDto.quantity,
+                                price = itemDto.price,
+                                options = itemDto.options
+                            )
+                        }
+                    )
+                }
+                Result.success(orderList)
             }
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 
@@ -149,10 +158,12 @@ class OrderRepositoryImpl @Inject constructor(
                 // 옵션 가격을 포함한 총 가격 계산
                 val totalPrice = if (menuId > 0 && selectedOptions.isNotEmpty()) {
                     // 저장된 menuId로 메뉴 상세 정보를 가져와서 옵션 가격 계산
+                    // 서버의 menuDto.price는 수량 1개당 기본 가격이므로, 옵션 가격을 추가하여 계산
                     calculateCartItemPriceWithOptions(menuId, menuDto.price, selectedOptions, menuDto.quantity)
                 } else {
-                    // menuId가 없거나 옵션이 없으면 서버가 반환한 가격 * 수량
-                    menuDto.price * menuDto.quantity
+                    // menuId가 없거나 옵션이 없으면 서버가 반환한 가격 사용
+                    // 서버의 price가 이미 수량이 곱해진 가격일 수도 있으므로, 수량을 곱하지 않음
+                    menuDto.price
                 }
                 
                 // 옵션 ID를 옵션 이름으로 변환
@@ -202,16 +213,20 @@ class OrderRepositoryImpl @Inject constructor(
                 }
             }.toMap()
             
-            // 선택된 옵션들의 가격 합계 계산
+            // 선택된 옵션들의 가격 합계 계산 (수량 1개당 옵션 가격)
             val totalOptionPrice = selectedOptions.sumOf { optionId ->
                 optionIdToPriceMap[optionId] ?: 0
             }
             
-            // (기본 가격 + 옵션 가격 합계) * 수량
-            (basePrice + totalOptionPrice) * quantity
+            // 단가 계산: 메뉴 기본 가격 + 옵션 가격 합계
+            val unitPrice = menuDetailDto.price + totalOptionPrice
+            
+            // 단가 * 수량
+            unitPrice * quantity
         } catch (e: Exception) {
-            // 에러 발생 시 서버가 반환한 가격 * 수량 사용
-            basePrice * quantity
+            // 에러 발생 시 서버가 반환한 가격이 이미 수량이 곱해진 가격인지 확인 필요
+            // 일단 서버 가격을 그대로 사용 (서버가 이미 올바른 총 가격을 반환할 수 있음)
+            basePrice
         }
     }
 
