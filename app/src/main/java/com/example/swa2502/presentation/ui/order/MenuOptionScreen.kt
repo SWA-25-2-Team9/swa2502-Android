@@ -142,6 +142,7 @@ private fun MenuOptionScreenContent(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(color = Color(0xFFFFFFFF))
                     .padding(paddingValues)
             ) {
                 LazyColumn(

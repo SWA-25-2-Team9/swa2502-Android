@@ -145,6 +145,7 @@ private fun OrderMenuScreenContent(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(color = Color(0xFFFFFFFF))
                     .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
@@ -154,6 +155,7 @@ private fun OrderMenuScreenContent(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(color = Color(0xFFFFFFFF))
                     .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
@@ -163,6 +165,7 @@ private fun OrderMenuScreenContent(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(color = Color(0xFFFFFFFF))
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp),
                 contentPadding = PaddingValues(vertical = 16.dp),

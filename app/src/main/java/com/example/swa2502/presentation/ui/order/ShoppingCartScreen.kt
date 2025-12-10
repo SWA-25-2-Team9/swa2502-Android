@@ -48,7 +48,12 @@ fun ShoppingCartScreen(
         uiState = uiState.value,
         onBackClick = onBackClick,
         onCheckoutClick = onCheckoutClick,
-        onQuantityChange = { cartItemId, newQuantity -> viewModel.onQuantityChange(cartItemId, newQuantity) },
+        onQuantityChange = { cartItemId, newQuantity ->
+            viewModel.onQuantityChange(
+                cartItemId,
+                newQuantity
+            )
+        },
         onDeleteMenu = viewModel::onDeleteMenu,
         onDeleteStore = viewModel::onDeleteStore,
         onClearAll = viewModel::onClearAll,
@@ -123,21 +128,40 @@ fun ShoppingCartScreenContent(
         modifier = modifier.background(Color(0xFFF5F5F5)) // 배경색 #F5F5F5
     ) { paddingValues ->
         if (uiState.isLoading) {
-            Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFFFFFFF))
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
                 CircularProgressIndicator()
             }
         } else if (uiState.errorMessage != null) {
-            Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFFFFFFF))
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
                 Text(text = uiState.errorMessage!!, color = Color.Red)
             }
         } else if (uiState.cartStores.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFFFFFFF))
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
                 Text(text = "카트가 비어있습니다.", color = Color.Gray)
             }
         } else {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(Color(0xFFFFFFFF))
                     .padding(paddingValues),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -296,7 +320,12 @@ fun CartMenuItem(
             ) {
                 // 감소 버튼
                 IconButton(
-                    onClick = { if (cartMenu.quantity > 1) onQuantityChange(cartMenu.cartItemId, cartMenu.quantity - 1) },
+                    onClick = {
+                        if (cartMenu.quantity > 1) onQuantityChange(
+                            cartMenu.cartItemId,
+                            cartMenu.quantity - 1
+                        )
+                    },
                     enabled = cartMenu.quantity > 1
                 ) {
                     Text(text = "–", fontSize = 16.sp, color = Color.Black)
@@ -343,8 +372,24 @@ private fun ShoppingCartScreenContentPreview() {
                 storeId = 1,
                 storeName = "커피하우스 1호점",
                 cartMenus = listOf(
-                    CartMenu(cartItemId = 1, menuId = 101, "아메리카노", 1, listOf(CartOption("ICE (+500원)")), 5000, 1),
-                    CartMenu(cartItemId = 2, menuId = 102, "카페라떼", 2, listOf(CartOption("HOT"), CartOption("샷 추가 (+500원)")), 11000, 1),
+                    CartMenu(
+                        cartItemId = 1,
+                        menuId = 101,
+                        "아메리카노",
+                        1,
+                        listOf(CartOption("ICE (+500원)")),
+                        5000,
+                        1
+                    ),
+                    CartMenu(
+                        cartItemId = 2,
+                        menuId = 102,
+                        "카페라떼",
+                        2,
+                        listOf(CartOption("HOT"), CartOption("샷 추가 (+500원)")),
+                        11000,
+                        1
+                    ),
                 )
             ),
             CartStore(
@@ -352,7 +397,15 @@ private fun ShoppingCartScreenContentPreview() {
                 storeName = "프리미엄 베이커리",
                 cartMenus = listOf(
                     CartMenu(cartItemId = 3, menuId = 201, "크루아상", 2, emptyList(), 6000, 2),
-                    CartMenu(cartItemId = 4, menuId = 202, "딸기 생크림 케이크", 1, listOf(CartOption("포장 박스 추가 (+500원)")), 4500, 2),
+                    CartMenu(
+                        cartItemId = 4,
+                        menuId = 202,
+                        "딸기 생크림 케이크",
+                        1,
+                        listOf(CartOption("포장 박스 추가 (+500원)")),
+                        4500,
+                        2
+                    ),
                 )
             ),
         ),
