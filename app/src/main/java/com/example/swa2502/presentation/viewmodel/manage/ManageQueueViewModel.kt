@@ -29,7 +29,6 @@ class ManageQueueViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ManageQueueUiState())
     val uiState: StateFlow<ManageQueueUiState> = _uiState.asStateFlow()
 
-    // TODO: 실제 shopId를 어디서 가져올지 결정 필요 (로그인 정보에서 가져오거나, 파라미터로 전달받기)
     private val shopId = 1 // 임시로 1 사용
 
     init {
