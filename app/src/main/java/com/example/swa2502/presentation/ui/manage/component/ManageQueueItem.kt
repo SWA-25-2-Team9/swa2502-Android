@@ -47,8 +47,8 @@ fun ManageQueueItem(
         else -> Color.Transparent
     }
     val stateString = when (orderState){
-        "READY" -> "조리 완료"
-        "ACCEPTED" -> "조리중"
+        "READY" -> "수령 완료"
+        "ACCEPTED" -> "조리 완료"
         else -> "조리완료"
     }
     Column(
@@ -73,7 +73,7 @@ fun ManageQueueItem(
                 Spacer(modifier = Modifier.size(6.dp))
                 Text(
                     modifier = Modifier,
-                    text = orderState,
+                    text = if (orderState == "READY") "조리 완료" else "조리중",
                     style = TextStyle(
                         color = Color(0xFF777777),
                         fontSize = 10.sp,
