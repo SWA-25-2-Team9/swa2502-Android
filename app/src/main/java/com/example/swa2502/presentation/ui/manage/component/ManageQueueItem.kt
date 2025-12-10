@@ -42,14 +42,14 @@ fun ManageQueueItem(
     onStateChange: () -> Unit,
 ) {
     val stateColor = when (orderState) {
-        "조리 완료" -> Color(0xFF50C878)
-        "조리중" -> Color(0xFFFF0000)
+        "READY", -> Color(0xFF50C878)
+        "ACCEPTED", -> Color(0xFFFF0000)
         else -> Color.Transparent
     }
     val stateString = when (orderState){
-        "조리 완료" -> "수령 완료"
-        "조리중" -> "조리 완료"
-        else -> ""
+        "READY" -> "조리 완료"
+        "ACCEPTED" -> "조리중"
+        else -> "조리완료"
     }
     Column(
         modifier = Modifier
@@ -116,7 +116,6 @@ fun ManageQueueItem(
         Spacer(modifier = Modifier.size(20.dp))
         Button(
             onClick = {
-                // TODO: 로직 구현 예정
                 onStateChange()
             },
             modifier = modifier
@@ -152,7 +151,7 @@ private fun ManageQueueItemPreview() {
         ManageQueueItem(
             modifier = Modifier,
             orderId = "abc123",
-            orderState = "조리 완료",
+            orderState = "READY",
             orderTime = "12:30",
             orderNumber = "123",
             menus = listOf("메뉴1", "메뉴2", "메뉴3"),
@@ -162,7 +161,7 @@ private fun ManageQueueItemPreview() {
         ManageQueueItem(
             modifier = Modifier,
             orderId = "abc321",
-            orderState = "조리중",
+            orderState = "ACCEPTED",
             orderTime = "12:32",
             orderNumber = "321",
             menus = listOf("메뉴1", "메뉴2", "메뉴3"),

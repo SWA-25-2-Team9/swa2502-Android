@@ -38,7 +38,7 @@ class ManageRepositoryImpl @Inject constructor(
      */
     private fun convertToOrderList(orderItems: List<AdminOrderItemDto>): List<Order> {
         return orderItems
-            .filter { it.status != OrderStatus.PICKEDUP.name } // PICKEDUP 상태 제외
+            .filter { it.status != OrderStatus.PICKED_UP.name } // PICKEDUP 상태 제외
             .groupBy { it.orderId }
             .map { (orderId, items) ->
                 Order(
