@@ -86,4 +86,7 @@ dependencies {
     ksp(libs.hilt.manager)
     // Datastore
     implementation(libs.androidx.datastore.preferences)
+    // Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.svg)
 }

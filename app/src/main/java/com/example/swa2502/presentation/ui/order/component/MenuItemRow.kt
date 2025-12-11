@@ -10,9 +10,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.swa2502.domain.model.MenuItem // MenuItem import
 
 @Composable
@@ -71,13 +74,15 @@ fun MenuItemRow(
                 modifier = Modifier
                     .size(80.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFFD3D3D3)) // #D3D3D3
+                    .background(Color(0xFFD3D3D3))
             ) {
-                Text(
-                    text = "메뉴 이미지",
-                    color = Color(0xFF777777), // #777777
-                    fontSize = 12.sp,
-                    modifier = Modifier.align(Alignment.Center)
+                AsyncImage(
+                    model = menuItem.imageUrl,
+                    contentDescription = menuItem.name,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    placeholder = ColorPainter(Color.Transparent),
+                    error = ColorPainter(Color.Transparent)
                 )
             }
         }
